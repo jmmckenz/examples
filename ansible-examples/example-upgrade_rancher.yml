@@ -1,0 +1,42 @@
+---
+- name: Install Rancher 
+  hosts: all
+  gather_facts: no
+  become: true
+  become_method: sudo
+  become_exe: /usr/bin/sudo
+
+  tasks: 
+  - name: update company-rancher repo
+    shell:
+      cmd: "/root/bin/helm repo update"
+      chdir: /root
+    when: inventory_hostname == rancher_mcm0
+   
+  - name: fetch rancher charts
+    shell:
+      cmd: "/root/bin/helm fetch company-rancher/rancher --version {{ rancher_version }} --insecure-skip-tls-verify"
+      chdir: /root
+    when: inventory_hostname == rancher_mcm0
+
+  - name: create rancher template
+    shell:
+      cmd: "/root/bin/helm template rancher ./rancher-{{ rancher_version }}.tgz --output-dir . --namespace cattle-system --set hostname={{ rancher_mcm_loadbalancer_vip_name }}.{{ cluster_domain }} --set certmanager.version=1.0.4 --set rancherImage={{ rancher_internal_airgap }}.{{ cluster_domain }}:443/docker.io/rancher/rancher --set systemDefaultRegistry={{ rancher_internal_airgap }}.{{ cluster_domain }}:443/docker.io --set useBundledSystemChart=true --no-hooks"
+      chdir: /root
+    when: inventory_hostname == rancher_mcm0
+
+  - name: apply cattle-system
+    shell: 
+      cmd: /var/lib/rancher/rke2/bin/kubectl -n cattle-system apply -R -f /root/rancher
+      chdir: /root      
+    ignore_errors: yes
+    when: inventory_hostname == rancher_mcm0
+
+  - name: check for cattle system pods
+    shell: 
+      cmd: "/var/lib/rancher/rke2/bin/kubectl get pods -n cattle-system |grep Running |wc -l"
+    register: cattle_system_pod_up
+    until: cattle_system_pod_up.stdout == "4"
+    retries: 20
+    delay: 30
+    when: inventory_hostname == rancher_mcm0

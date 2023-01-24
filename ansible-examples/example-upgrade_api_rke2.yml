@@ -1,0 +1,122 @@
+---
+- name: Upgrade API RKE2
+  hosts: all
+  gather_facts: no
+  become: true
+  become_method: sudo
+  become_exe: /usr/bin/sudo
+  
+  tasks:
+  - name: remove old cis profile in /etc/rancher/rke2/config.yaml
+    lineinfile:
+      path: /etc/rancher/rke2/config.yaml
+      line: 'profile: "cis-1.5"'
+      state: absent
+    when: inventory_hostname in rancher_all_api or
+          inventory_hostname in rancher_workers
+  
+  - name: Add cis-1.6 hardening to config.yaml
+    lineinfile:
+      path: /etc/rancher/rke2/config.yaml
+      line: "{{ item }}"
+      state: present
+    with_items:
+      - 'profile: "cis-1.6"'
+    when: inventory_hostname in rancher_all_api or
+          inventory_hostname in rancher_workers
+ 
+  - name: Add cis-1.6 hardening to config.yaml
+    lineinfile:
+      path: /etc/rancher/rke2/config.yaml
+      line: "{{ item }}"
+      state: present
+    with_items:
+      - 'write-kubeconfig-mode: "0644"'
+      - 'selinux: true'
+    when: inventory_hostname in rancher_api0
+ 
+  - name: Add etcd group
+    group:
+      name: etcd
+      state: present
+    when: inventory_hostname in rancher_all_api or
+          inventory_hostname in rancher_workers
+          
+  - name: Add etcd user
+    user:
+      name: etcd
+      group: etcd
+      state: present
+      shell: /sbin/nologin
+      comment: "etcd user"
+    when: inventory_hostname in rancher_all_api or
+          inventory_hostname in rancher_workers
+
+  - name: Copy rke2-cis-sysctl.conf to sysctl.d
+    copy:
+      src: /usr/local/share/rke2/rke2-cis-sysctl.conf
+      dest: /etc/sysctl.d/60-rke2-cis.conf
+      remote_src: yes
+    when: inventory_hostname in rancher_all_api or
+          inventory_hostname in rancher_workers
+
+  - name: Remove system-default-registry declaration in config.yaml for rke2 1.20.X and greater
+    lineinfile:
+      path: "/etc/rancher/rke2/config.yaml"
+      regexp: "^system-default-registry"
+      state: absent
+    when: rke2_version is version('1.20', '>=') and
+          (inventory_hostname in rancher_all_api or
+          inventory_hostname in rancher_workers)
+
+  - name: Modify registries.yaml for 1.20.X and greater
+    replace:
+      path: "/etc/rancher/rke2/registries.yaml"
+      regexp: "^#replace"
+      replace: ""
+    when: rke2_version is version('1.20', '>=') and
+          (inventory_hostname in rancher_all_api or
+          inventory_hostname in rancher_workers)
+
+  - name: Populate Upgrade Yaml Files on Primary RKE2 Cluster node
+    template: 
+      src: "templates/upgrade/{{ item }}"
+      dest: "/root/{{ item }}"
+    with_items:
+      - system-upgrade-controller.yaml
+      - upgrade_plan.yaml
+    when: inventory_hostname == rancher_api0
+
+  - name: Install system-upgrade-controller
+    shell: 
+      cmd: "/var/lib/rancher/rke2/bin/kubectl apply -f /root/system-upgrade-controller.yaml"
+    when: inventory_hostname == rancher_api0
+
+  - name: Give system-upgrade-controller pod time to come up
+    wait_for:
+      delay: 60
+      timeout: 0
+    when: inventory_hostname == rancher_api0
+
+  - name: Get system-upgrade-controller pod name
+    shell:
+      cmd: "/var/lib/rancher/rke2/bin/kubectl get pods -n system-upgrade |grep system-upgrade"
+    register: pod_name
+    when: inventory_hostname == rancher_api0
+
+  - name: restart system-upgrade-controller pod
+    shell:
+      cmd: "/var/lib/rancher/rke2/bin/kubectl delete pod -n system-upgrade {{ pod_name.stdout.split(' ')[0] }}"
+    when: inventory_hostname == rancher_api0
+                
+  - name: Give system-upgrade-controller pod time to come up
+    wait_for:
+      delay: 60
+      timeout: 0
+    when: inventory_hostname == rancher_api0
+
+  - name: Apply upgrade plans
+    shell:
+      cmd: "/var/lib/rancher/rke2/bin/kubectl apply -f /root/upgrade_plan.yaml"
+    when: inventory_hostname == rancher_api0
+
