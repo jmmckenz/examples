@@ -1,0 +1,51 @@
+# Server plan
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: server-plan
+  namespace: system-upgrade
+  labels:
+    rke2-upgrade: server
+spec:
+  concurrency: 1
+  cordon: true
+  nodeSelector:
+    matchExpressions:
+       # When using k8s version 1.19 or older, swap control-plane with master
+       - {key: node-role.kubernetes.io/master, operator: In, values: ["true"]}
+  serviceAccountName: system-upgrade
+  cordon: true
+#  drain:
+#    force: true
+  upgrade:
+    image: {{ rancher_internal_airgap }}.company.com:443/docker.io/rancher/rke2-upgrade
+  version: v1.21.4-rke2r2
+---
+# Agent plan
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: agent-plan
+  namespace: system-upgrade
+  labels:
+    rke2-upgrade: agent
+spec:
+  concurrency: 1
+  nodeSelector:
+    matchExpressions:
+      # When using k8s version 1.19 or older, swap control-plane with master
+      - {key: node-role.kubernetes.io/master, operator: NotIn, values: ["true"]}
+  prepare:
+    args:
+    - prepare
+    - server-plan
+    image: {{ rancher_internal_airgap }}.company.com:443/docker.io/rancher/rke2-upgrade
+  serviceAccountName: system-upgrade
+  cordon: true
+  drain:
+    force: true
+    disableEviction: true
+    skipWaitForDeleteTimeout: 480
+  upgrade:
+    image: {{ rancher_internal_airgap }}.company.com:443/docker.io/rancher/rke2-upgrade
+  version: v1.21.4-rke2r2
