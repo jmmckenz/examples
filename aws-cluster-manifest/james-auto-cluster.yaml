@@ -1,0 +1,66 @@
+apiVersion: provisioning.cattle.io/v1
+kind: Cluster
+metadata:
+  name: james-auto
+  namespace: fleet-default
+spec:
+  cloudCredentialSecretName: cattle-global-data:cc-nz6ph
+  kubernetesVersion: v1.25.9+rke2r1
+  localClusterAuthEndpoint: {}
+  rkeConfig:
+    chartValues:
+      rke2-calico: {}
+    etcd:
+      snapshotRetention: 5
+      snapshotScheduleCron: 0 */5 * * *
+    machineGlobalConfig:
+      cni: calico
+      disable-kube-proxy: false
+      etcd-expose-metrics: false
+    machinePools:
+      - controlPlaneRole: true
+        etcdRole: true
+        machineConfigRef:
+          kind: Amazonec2Config
+          name: nc-james-auto-control
+        name: control
+        quantity: 3
+        unhealthyNodeTimeout: 0s
+      - machineConfigRef:
+          kind: Amazonec2Config
+          name: nc-james-auto-worker
+        name: worker
+        quantity: 2
+        unhealthyNodeTimeout: 0s
+        workerRole: true
+    machineSelectorConfig:
+      - config:
+          protect-kernel-defaults: false
+    registries: {}
+    upgradeStrategy:
+      controlPlaneConcurrency: '1'
+      controlPlaneDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        ignoreErrors: false
+        postDrainHooks: null
+        preDrainHooks: null
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120
+      workerConcurrency: '1'
+      workerDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        ignoreErrors: false
+        postDrainHooks: null
+        preDrainHooks: null
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120

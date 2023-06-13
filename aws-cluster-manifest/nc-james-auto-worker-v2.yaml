@@ -1,0 +1,75 @@
+accessKey: null
+ami: ami-0059d217c13c8ea4d
+apiVersion: rke-machine-config.cattle.io/v1
+blockDurationMinutes: '0'
+deviceName: null
+encryptEbsVolume: false
+endpoint: null
+httpEndpoint: null
+httpTokens: null
+iamInstanceProfile: null
+insecureTransport: false
+instanceType: t3a.medium
+keypairName: null
+kind: Amazonec2Config
+kmsKey: null
+metadata:
+  name: nc-james-auto-worker
+  namespace: fleet-default
+monitoring: false
+openPort: []
+privateAddressOnly: false
+region: us-east-1
+requestSpotInstance: false
+retries: '5'
+rootSize: '50'
+secretKey: null
+securityGroup:
+  - rancher-nodes
+securityGroupReadonly: false
+sessionToken: null
+spotPrice: '0.50'
+sshKeyContents: null
+sshUser: ec2-user
+subnetId: subnet-06c12b5f358958e4b
+tags: null
+useEbsOptimizedInstance: false
+usePrivateAddress: false
+userdata: |
+  #cloud-config
+  package_update: true
+  disable_root: false
+  packages:
+    - cloud-init
+    - jq
+    - git
+  runcmd:
+    - - systemctl
+      - stop 
+      - nm-cloud-setup.service
+    - - systemctl
+      - stop 
+      - nm-cloud-setup.timer
+    - - systemctl
+      - disable 
+      - nm-cloud-setup.service
+    - - systemctl
+      - disable 
+      - nm-cloud-setup.timer
+    - ln -s /var/lib/rancher/rke2/bin/kubectl /usr/local/bin/
+    - mkdir /root/.kube
+    - ln -s /etc/rancher/rke2/rke2.yaml /root/.kube/config
+  users:
+    - name: ec2-user
+      shell: /bin/bash
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZW4yvbgBmz0eVW67mwP/kyUcelpUjo9ipN/nCzePemQMX01177H2UOTH7S1bJty9z9933O2Ey1OsOSzSDq75og4M+z0gHBrEJInBrWyr2CR+cCsiEmXbtP1rXjjt4+DA6OjxdW3guI2mCY54msEF58uoY0JiPgUSt3qBUAXpM+Qqd0IOnFVaCRktSpo4ysJTI6kk9/ZGqaBCT3I9hhoQ34aAhyMY4tcTj3JlJbsMqq51MWYkPGhc4aiFhct0M4HSri4MwjIlhWCRAXJx3g5oDk+DeOy0XTdHiyHlITBvGfceO5kRoZGbV4fcdt7NoaWU1xJ9g12M5etN8EaML4wE9 labrancher
+  power_state:
+  delay: "+1"
+  mode: reboot
+  message: Rebooting to apply system changes
+  timeout: 120
+volumeType: gp2
+vpcId: vpc-0c7030fe832ea9dc5
+zone: a
