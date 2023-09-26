@@ -1,0 +1,4 @@
+defaultNamespace: cattle-monitoring-system
+helm:
+  chart: https://github.com/rancher/charts/blob/release-v2.8/assets/rancher-monitoring-crd/rancher-monitoring-crd-102.0.1+up40.1.2.tgz
+  releaseName: rancher-monitoring-crd
