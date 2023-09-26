@@ -48,7 +48,7 @@ helm:
             release: "rancher-monitoring"
 
 dependsOn:
-  - name: suse-charts-rancher-monitoring-crd
+  - name: suse-charts-fleet-rancher-monitoring-crd
 
 diff:
   comparePatches:
