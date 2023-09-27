@@ -20,7 +20,7 @@ spec:
         app: hello-world
     spec:
       containers:
-      - image: rancher/hello-world
+      - image: rancher/hello-world:v0.1.2
         imagePullPolicy: Always
         name: hello-world
         ports:
