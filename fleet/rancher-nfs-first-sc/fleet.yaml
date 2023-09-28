@@ -1,15 +1,14 @@
 # Reference: https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/blob/master/charts/nfs-subdir-external-provisioner/README.md
 # For multiple storage class config, unique storageClass.name and storageClass.provisionerName need to be provided. 
 # Compare rancher-nfs-first-sc and rancher-nfs-second-sc fleet.yaml's for example of multiple storageClass deployment.
-# If you intend on using an NFS storageClass as default, this can be changed in the UI or use annotations
+# If you intend on using an NFS storageClass as default, this can be changed in the UI
 defaultNamespace: rancher-nfs
 helm:
   repo: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
   chart: nfs-subdir-external-provisioner
   values:
     annotations:
-      storageclass.beta.kubernetes.io/is-default-class: true
-      storageclass.kubernetes.io/is-default-class: true
+
     storageClass:
       name: nfs-client-0
       provisionerName: cluster-local/nfs-subdir-external-provisioner-0
