@@ -1,0 +1,9 @@
+helm:
+  repo: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+  chart: nfs-subdir-external-provisioner
+  version: 4.0.18
+  values:
+    nfs:
+      server: 10.0.0.12
+      path: /nfs
+      
