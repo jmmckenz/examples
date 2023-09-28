@@ -1,1 +1,11 @@
-
+defaultNamespace: rancher-nfs
+helm:
+  repo: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+  chart: nfs-subdir-external-provisioner
+  values:
+    storageClass:
+      name: nfs-client-1
+      provisionerName: cluster-local/nfs-subdir-external-provisioner-1
+    nfs:
+      server: 10.0.0.12
+      path: /nfs2
