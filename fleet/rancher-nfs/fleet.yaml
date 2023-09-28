@@ -1,4 +1,6 @@
+defaultNamespace: rancher-nfs
 helm:
+  releaseName: rancher-nfs-sc
   repo: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
   chart: nfs-subdir-external-provisioner
   version: 4.0.18
