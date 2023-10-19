@@ -12,6 +12,8 @@ helm:
     storageClass:
       name: nfs-client-0
       provisionerName: cluster-local/nfs-subdir-external-provisioner-0
+      parameters:
+        onDelete: Retain
     nfs:
       server: 10.0.0.12
       path: /nfs
