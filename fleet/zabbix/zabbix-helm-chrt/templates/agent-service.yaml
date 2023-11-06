@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "zabbix.agent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+{{- if .Values.zabbixAgent.service.annotations }}
+  annotations:
+{{ toYaml .Values.zabbixAgent.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+{{- if .Values.zabbixAgent.service.labels }}
+    {{ toYaml .Values.zabbixAgent.service.labels | indent 4}}
+{{- end }}
+    app: {{ include "zabbix.agent.fullname" . | quote }}
+    chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+spec:
+  type: {{ .Values.zabbixAgent.service.type }}
+  ports:
+    - port: {{ .Values.zabbixAgent.service.port }}
+    {{- if ( and (eq .Values.zabbixAgent.service.type "NodePort" ) (not (empty .Values.zabbixAgent.service.nodePort)) ) }}
+      nodePort: {{ .Values.zabbixAgent.service.nodePort }}
+    {{- end }}
+      targetPort: {{ .Values.zabbixAgent.service.targetPort }}
+      protocol: TCP
+      name: {{ .Values.zabbixAgent.service.portName }}
+  selector:
+    name: zabbix-agent

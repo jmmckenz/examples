@@ -1,0 +1,31 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+{{- if .Values.zabbixAgent.enabled }}
+Zabbix agent installed:  "{{ .Values.zabbixAgent.image.repository }}:{{ .Values.zabbixAgent.image.tag }}"
+{{- end }}
+
+{{- if .Values.zabbixProxy.enabled }}
+Zabbix proxy installed:  "{{ .Values.zabbixProxy.image.repository }}:{{ .Values.zabbixProxy.image.tag }}"
+{{- end }}
+
+Annotations:
+app.kubernetes.io/name: {{ include "zabbix.fullname" . }}
+helm.sh/chart: {{ include "zabbix.chart" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+
+{{ if .Values.serviceAccount.create}}
+Service account created: 
+    {{ default (include "zabbix.fullname" .) .Values.serviceAccount.name -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end }}
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}

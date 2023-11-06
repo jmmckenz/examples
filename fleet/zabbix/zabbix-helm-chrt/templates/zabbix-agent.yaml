@@ -1,0 +1,131 @@
+{{- if and .Values.zabbixAgent.enabled -}}
+apiVersion: {{ template "zabbix.daemonset.apiVersion" . }}
+kind: DaemonSet
+metadata:
+  name: zabbix-agent
+  labels:
+    app: zabbix
+    tier: agent
+
+spec:
+  selector:
+   matchLabels:
+    name: zabbix-agent
+  template:
+    metadata:
+      labels:
+        name: zabbix-agent
+        app: zabbix
+    spec:
+      {{- if .Values.zabbixAgent.hostNetwork }}
+      hostNetwork: {{ .Values.zabbixAgent.hostNetwork }}
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      {{- if .Values.zabbixAgent.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.zabbixAgent.dnsConfig | indent 8 }}
+      {{- end }}
+      hostPID: {{ .Values.zabbixAgent.hostPID }}
+      {{- if .Values.zabbixAgent.securityContext }}
+      securityContext:
+{{ toYaml .Values.zabbixAgent.securityContext | indent 8 }}
+      {{- end }}
+      serviceAccountName: {{ template "zabbix.agent.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.zabbixAgent.serviceAccount.automountServiceAccountToken }}
+      containers:
+        - name: zabbix-agent
+          {{- if .Values.zabbixAgent.resources }}
+          resources:
+            {{- toYaml .Values.zabbixAgent.resources | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.zabbixAgent.image.repository }}:{{ .Values.zabbixAgent.image.tag }}"
+          imagePullPolicy: {{ .Values.zabbixAgent.image.pullPolicy }}
+          ports:
+            - name: zabbix-agent
+              containerPort: 10050
+              protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: 10050
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 10050
+            timeoutSeconds: 3
+            failureThreshold: 3
+            periodSeconds: 10
+          {{- if .Values.zabbixAgent.containerSecurityContext }}
+          securityContext:
+{{ toYaml .Values.zabbixAgent.containerSecurityContext | nindent 12 }}
+          {{- end }}
+          env:
+            - name: ZBX_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          {{- range .Values.zabbixAgent.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote  }}
+           {{- end }}
+          volumeMounts:
+            - name: proc
+              mountPath: /hostfs/proc
+              readOnly:  true
+            - name: sys
+              mountPath: /hostfs/sys
+              readOnly: true
+            {{- if .Values.zabbixAgent.hostRootFsMount }}
+            - name: root
+              mountPath: /hostfs/root
+              mountPropagation: HostToContainer
+              readOnly: true
+            {{- end }}
+            {{- if .Values.zabbixAgent.extraHostVolumeMounts }}
+            {{- range $_, $mount := .Values.zabbixAgent.extraHostVolumeMounts }}
+            - name: {{ $mount.name }}
+              mountPath: {{ $mount.mountPath }}
+              readOnly: {{ $mount.readOnly }}
+            {{- if $mount.mountPropagation }}
+              mountPropagation: {{ $mount.mountPropagation }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+  {{- if .Values.zabbixAgent.image.pullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.zabbixAgent.image.pullSecrets | indent 6 }}
+      {{- end }}
+      {{- if .Values.zabbixAgent.tolerations }}
+      tolerations:
+{{ toYaml .Values.zabbixAgent.tolerations | indent 6 }}
+      {{- end }}
+      {{- if .Values.zabbixAgent.affinity }}
+      affinity:
+{{ toYaml .Values.zabbixAgent.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.zabbixAgent.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.zabbixAgent.nodeSelector | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+        {{- if .Values.zabbixAgent.hostRootFsMount }}
+        - name: root
+          hostPath:
+            path: /
+        {{- end }}
+        {{- if .Values.zabbixAgent.extraHostVolumeMounts }}
+        {{- range $_, $mount := .Values.zabbixAgent.extraHostVolumeMounts }}
+        - name: {{ $mount.name }}
+          hostPath:
+            path: {{ $mount.hostPath }}
+        {{- end }}
+        {{- end }}
+{{- end }}

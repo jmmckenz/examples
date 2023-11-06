@@ -1,0 +1,88 @@
+{{- if and .Values.zabbixProxy.enabled -}}
+apiVersion: {{ template "zabbix.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: zabbix-proxy
+  labels:
+    app: zabbix
+    tier: proxy
+spec:
+  selector:
+    matchLabels:
+      name: zabbix-proxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: zabbix-proxy
+        app: zabbix
+    spec:
+      containers:
+        - name: zabbix-proxy
+          image: "{{ .Values.zabbixProxy.image.repository }}:{{ .Values.zabbixProxy.image.tag }}"
+          imagePullPolicy: {{ .Values.zabbixProxy.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.zabbixProxy.service.port }}
+              protocol: TCP
+              name: zabbix-proxy
+          startupProbe:
+            tcpSocket:
+              port: {{ .Values.zabbixProxy.service.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.zabbixProxy.service.port }}
+            timeoutSeconds: 3
+            failureThreshold: 3
+            periodSeconds: 10
+        {{- if .Values.zabbixProxy.resources }}
+          resources:
+{{- toYaml .Values.zabbixProxy.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: storage-volume
+              mountPath: "{{ .Values.zabbixProxy.persistentVolume.mountPath }}"
+              subPath: "{{ .Values.zabbixProxy.persistentVolume.subPath }}"
+          {{- if .Values.zabbixProxy.extraVolumeMounts }}
+{{ toYaml .Values.zabbixProxy.extraVolumeMounts | indent 12 }}
+          {{- end }}
+        {{- if .Values.zabbixProxy.containerSecurityContext }}
+          securityContext:
+{{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          {{- end }}
+          env:
+            {{- range .Values.zabbixProxy.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote  }}
+           {{- end }}
+  {{- if .Values.zabbixProxy.image.pullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.zabbixProxy.image.pullSecrets | indent 6 }}
+      {{- end }}
+  {{- if .Values.zabbixProxy.tolerations }}
+      tolerations:
+{{ toYaml .Values.zabbixProxy.tolerations | indent 6 }}
+      {{- end }}
+      {{- if .Values.zabbixProxy.affinity }}
+      affinity:
+{{ toYaml .Values.zabbixProxy.affinity | indent 6 }}
+      {{- end }}
+      {{- if .Values.zabbixProxy.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.zabbixProxy.nodeSelector | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: storage-volume
+      {{- if .Values.zabbixProxy.persistentVolume.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.zabbixProxy.persistentVolume.existingClaim }}{{ .Values.zabbixProxy.persistentVolume.existingClaim }}{{- else }}{{ template "zabbix.proxy.fullname" . }}{{- end }}
+      {{- else}}
+          emptyDir: {}
+      {{- end -}}
+      {{- if .Values.zabbixProxy.extraVolumes }}
+{{ toYaml .Values.zabbixProxy.extraVolumes | indent 8 }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,44 @@
+{{- if .Values.zabbixProxy.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.zabbixProxy.service.annotations }}
+  annotations:
+{{ toYaml .Values.zabbixProxy.service.annotations | indent 4}}
+{{- end }}
+  name: {{ template "zabbix.proxy.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{- if .Values.zabbixProxy.service.labels }}
+    {{ toYaml .Values.zabbixProxy.service.labels | indent 4}}
+{{- end }}
+    app: {{ include "zabbix.name" . | quote }}
+    chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+spec:
+{{- if .Values.zabbixProxy.service.clusterIP }}
+  clusterIP: {{ .Values.zabbixProxy.service.clusterIP }}
+{{- end }}
+{{- if .Values.zabbixProxy.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.zabbixProxy.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.zabbixProxy.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.zabbixProxy.service.loadBalancerIP }}
+{{- end }}
+{{- if .Values.zabbixProxy.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{- range $cidr := .Values.zabbixProxy.service.loadBalancerSourceRanges }}
+    - {{ $cidr }}
+  {{- end }}
+{{- end }}
+  ports:
+    - name: zabbix-proxy
+      port: {{ .Values.zabbixProxy.service.port }}
+      protocol: TCP
+      targetPort: {{ .Values.zabbixProxy.service.targetPort }}
+  selector:
+    name: zabbix-proxy
+  type: {{ .Values.zabbixProxy.service.type | quote }}
+{{- end }}

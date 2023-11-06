@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 6.4.6
+dependencies:
+- condition: kube-state-metrics.enabled
+  name: kube-state-metrics
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 5.7.*
+description: A Helm chart for deploying Zabbix agent and proxy
+home: https://www.zabbix.com/
+icon: https://assets.zabbix.com/img/logo/zabbix_logo_500x131.png
+name: zabbix-helm-chrt
+type: application
+version: 1.3.4
