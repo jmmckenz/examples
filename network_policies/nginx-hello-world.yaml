@@ -28,7 +28,7 @@ http {
    server {
        listen 80;
        location / {
-           return 200 "Hello world!";
+           return 200 "What is your quest?";
        }
    }
 }
