@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: hello-world
+    app-revision: 0.1
   name: hello-world
 spec:
   replicas: 3
@@ -18,7 +19,6 @@ spec:
     metadata:
       labels:
         app: hello-world
-        revision: 0.1
     spec:
       containers:
       - image: rancher/hello-world:v0.1.2
