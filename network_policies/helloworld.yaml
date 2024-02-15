@@ -18,6 +18,7 @@ spec:
     metadata:
       labels:
         app: hello-world
+        revision: 0.1
     spec:
       containers:
       - image: rancher/hello-world:v0.1.2
