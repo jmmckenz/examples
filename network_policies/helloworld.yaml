@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: hello-world
-    app-revision: 0.1
+    app-revision: 0.2
   name: hello-world
 spec:
   replicas: 3
