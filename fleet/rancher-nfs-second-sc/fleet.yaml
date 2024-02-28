@@ -8,5 +8,5 @@ helm:
       provisionerName: cluster-local/nfs-subdir-external-provisioner-1
       reclaimPolicy: Retain
     nfs:
-      server: 10.0.0.12
+      server: 10.0.0.94
       path: /nfs2
