@@ -28,7 +28,7 @@ http {
    server {
        listen 80;
        location / {
-           return 200 "What is your quest?";
+           return 200 "What is your favorite color?";
        }
    }
 }
@@ -53,7 +53,7 @@ spec:
       - image: nginx:latest
         name: nginx
         ports:
-        - containerPort: 80
+        - containerPort: 8080
           name: web
         volumeMounts:
           - name: config-vol
