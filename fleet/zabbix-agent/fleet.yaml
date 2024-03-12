@@ -1,0 +1,19 @@
+defaultNamespace: zabbix-agent
+helm:
+  repo: https://cdn.zabbix.com/zabbix/integrations/kubernetes-helm/6.0/
+  chart: zabbix-helm-chrt
+  values:
+    zabbixProxy:
+      env:
+        ZBX_SERVER_HOST: 192.168.218.4
+      nodeSelector:
+        kubernetes.io/os: linux
+      toleration:
+        - effect: NoSchedule-
+          key: node-role.kubernetes.io/control-plane
+    kube-state-metrics:
+      nodeSelector:
+        kubernetes.io/os: linux
+      toleration:
+        - effect: NoSchedule-
+          key: node-role.kubernetes.io/control-plane
