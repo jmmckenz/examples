@@ -5,7 +5,8 @@ helm:
   values:
     zabbixProxy:
       env:
-        - ZBX_SERVER_HOST: 192.168.218.4
+        - name: ZBX_SERVER_HOST 
+          value: 192.168.218.4
       nodeSelector:
         kubernetes.io/os: linux
       toleration:
