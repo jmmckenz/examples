@@ -3,8 +3,8 @@
 # Write files out to disk   
 write_files:
    -   encoding: b64
-       content: NDI=
-       path: C:\b64
+       content: SGVsbG8gV29ybGQhCg==
+       path: C:\hello-world
        permissions: '0644'
    -   encoding: base64
        content: NDI=
