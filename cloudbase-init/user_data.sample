@@ -92,5 +92,5 @@ ntp:
 
 # Execute commands at the command line  
 runcmd:
-  - 'd:\x64\setup.exe /qemu-ga /lic_accepted /virtio /force'
+  - 'd:\x64\setup.exe /qemu-ga /lic_accepted'
   - ['echo', '1']
