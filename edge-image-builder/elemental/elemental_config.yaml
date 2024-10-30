@@ -1,0 +1,16 @@
+elemental:
+    registration:
+        url: https://mcrancher.mclocal/elemental/registration/vg65nwk8qrzqbkp48h6r56bstqscjxr7jlm7ckf95gclnhphgwjmzw
+        ca-cert: |-
+            -----BEGIN CERTIFICATE-----
+            MIIBvTCCAWOgAwIBAgIBADAKBggqhkjOPQQDAjBGMRwwGgYDVQQKExNkeW5hbWlj
+            bGlzdGVuZXItb3JnMSYwJAYDVQQDDB1keW5hbWljbGlzdGVuZXItY2FAMTcyOTEy
+            OTY0MDAeFw0yNDEwMTcwMTQ3MjBaFw0zNDEwMTUwMTQ3MjBaMEYxHDAaBgNVBAoT
+            E2R5bmFtaWNsaXN0ZW5lci1vcmcxJjAkBgNVBAMMHWR5bmFtaWNsaXN0ZW5lci1j
+            YUAxNzI5MTI5NjQwMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERegCFhJC7G+3
+            tN33KxbJ4LfsC8oInU5EZaU/FPjjQyg2Pyns7zcnXnmZRCf6k6jOG8ttPx+XwRM3
+            bg06KLwq7KNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYD
+            VR0OBBYEFOll0ftsrQcb3/k7PkvKzmV2rLkSMAoGCCqGSM49BAMCA0gAMEUCIGvd
+            upFwYZHVg34GQh0QplpwI6BYhcgITDqusI4YLeoxAiEA4/cT9Em8MabNODiYT9PM
+            xLnVmMUJGI9KAjpKuzo8Zo4=
+            -----END CERTIFICATE-----
