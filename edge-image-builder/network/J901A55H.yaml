@@ -24,7 +24,7 @@ interfaces:
         miimon: '140'
       port:
         - eth0
-        - eth1
+        - eth5
   - name: eth0
     type: ethernet
     state: up
@@ -33,7 +33,7 @@ interfaces:
       enabled: false
     ipv6:
       enabled: false
-  - name: eth1
+  - name: eth5
     type: ethernet
     state: up
     mac-address: 04:32:01:60:CD:22
