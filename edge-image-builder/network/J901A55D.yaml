@@ -3,7 +3,7 @@ routes:
   - destination: 0.0.0.0/0
     metric: 100
     next-hop-address: 10.21.11.254
-    next-hop-interface: eth0
+    next-hop-interface: egress-bond0
     table-id: 254
 dns-resolver:
   config:
