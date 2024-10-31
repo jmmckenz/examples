@@ -1,0 +1,43 @@
+routes:
+  config:
+  - destination: 0.0.0.0/0
+    metric: 100
+    next-hop-address: 10.21.11.254
+    next-hop-interface: eth0
+    table-id: 254
+dns-resolver:
+  config:
+    server:
+    - 1.1.1.1
+interfaces:
+  - name: egress-bond0
+    type: bond
+    state: up
+    ipv4:
+      address:
+        - ip: 10.21.11.2
+          prefix-length: 24
+      enabled: true
+    link-aggregation:
+      mode: balance-rr
+      options:
+        miimon: '140'
+      port:
+        - eth0
+        - eth1
+  - name: eth0
+    type: ethernet
+    state: up
+    mac-address: 04:32:01:58:B8:30
+    ipv4:
+      enabled: false
+    ipv6:
+      enabled: false
+  - name: eth1
+    type: ethernet
+    state: up
+    mac-address: 04:32:01:60:AC:90
+    ipv4:
+      enabled: false
+    ipv6:
+      enabled: false
