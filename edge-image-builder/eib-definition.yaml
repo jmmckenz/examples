@@ -16,4 +16,6 @@ operatingSystem:
     packageList:
     - jq
     - git
+    - open-lldp
+    - bind-utils
     sccRegistrationCode: {{ sccRegCode }}
