@@ -3,22 +3,43 @@ routes:
   - destination: 0.0.0.0/0
     metric: 100
     next-hop-address: 192.168.50.1
-    next-hop-interface: eth0
+    next-hop-interface: bond99
     table-id: 254
 dns-resolver:
   config:
     server:
     - 10.0.0.94
 interfaces:
-- name: eth0
+- name: mynic0
+  type: ethernet
+  state: up
+  mac-address: da:b7:e6:6c:d5:34
+  ipv4:
+    enabled: false
+  ipv6:
+    enabled: false
+- name: mynic1
   type: ethernet
   state: up
   mac-address: 02:8f:75:87:f9:b3
   ipv4:
+    enabled: false
+  ipv6:
+    enabled: false
+- name: bond99
+  type: bond
+  state: up
+  ipv4:
     address:
-    - ip: 192.168.50.241
-      prefix-length: 24
-    dhcp: false
+      - ip: 192.168.50.241
+        prefix-length: 24
     enabled: true
+  link-aggregation:
+    mode: balance-rr
+    options:
+      miimon: '140'
+    port:
+      - mynic0
+      - mynic1
   ipv6:
     enabled: false
