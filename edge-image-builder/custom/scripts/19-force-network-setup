@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euo pipefail
+
+cp -R ./os-files/* /
+cp -R ./network /root/bin/combustion
+
+systemctl enable runonce.service
