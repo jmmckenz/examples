@@ -5,6 +5,15 @@ image:
   baseImage: slemicro.iso
   outputImageName: eib-image.iso
 operatingSystem:
+  time:
+    timezone: America/Chicago
+    ntp:
+      forceWait: false
+      pools:
+        - 1.pool.ntp.org
+  kernelArgs:
+    - net.ifnames=1
+  keymap: us
   isoConfiguration:
     installDevice: /dev/sda
   users:
