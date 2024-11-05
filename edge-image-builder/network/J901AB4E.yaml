@@ -23,17 +23,17 @@ interfaces:
       options:
         miimon: '140'
       port:
-        - eth0
-#        - eth5
-  - name: eth0
+        - bndnic0
+#        - bndnic1
+  - name: bndnic0
     type: ethernet
     state: up
-    mac-address: 04:32:01:58:9C:F0
+    mac-address: 04:32:01:58:9c:f0
     ipv4:
       enabled: false
     ipv6:
       enabled: false
-#  - name: eth5
+#  - name: bndnic1
 #    type: ethernet
 #    state: up
 #    mac-address: 
