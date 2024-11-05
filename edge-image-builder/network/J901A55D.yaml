@@ -25,18 +25,18 @@ interfaces:
       port:
         - eth0
         - eth5
-  - name: eth0
+  - name: bndnic0
     type: ethernet
     state: up
-    mac-address: 04:32:01:58:B8:30
+    mac-address: 04:32:01:58:b8:30
     ipv4:
       enabled: false
     ipv6:
       enabled: false
-  - name: eth5
+  - name: bndnic1
     type: ethernet
     state: up
-    mac-address: 04:32:01:60:AC:90
+    mac-address: 04:32:01:60:aC:90
     ipv4:
       enabled: false
     ipv6:
