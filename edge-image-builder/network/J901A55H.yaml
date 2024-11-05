@@ -23,8 +23,8 @@ interfaces:
       options:
         miimon: '140'
       port:
-        - eth0
-        - eth5
+        - bndnic0
+        - bndnic1
   - name: bndnic0
     type: ethernet
     state: up
