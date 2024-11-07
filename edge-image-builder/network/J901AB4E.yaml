@@ -2,7 +2,7 @@ routes:
   config:
   - destination: 0.0.0.0/0
     metric: 100
-    next-hop-address: 10.21.11.254
+    next-hop-address: 10.20.11.254
     next-hop-interface: egress-bond0
     table-id: 254
 dns-resolver:
@@ -15,7 +15,7 @@ interfaces:
     state: up
     ipv4:
       address:
-        - ip: 10.21.11.1
+        - ip: 10.20.11.30
           prefix-length: 24
       enabled: true
     link-aggregation:
@@ -41,3 +41,27 @@ interfaces:
 #      enabled: false
 #    ipv6:
 #      enabled: false
+  - name: gignic0
+    type: ethernet
+    state: up
+    mac-address: 00:62:0b:0d:b3:88
+    ipv4:
+      address:
+      - ip: 10.21.1.1
+        prefix-length: 24
+      dhcp: false
+      enabled: true
+    ipv6:
+      enabled: false
+  - name: gignic1
+    type: ethernet
+    state: up
+    mac-address: 00:62:0b:0d:b3:89
+    ipv4:
+      address:
+      - ip: 10.21.10.1
+        prefix-length: 24
+      dhcp: false
+      enabled: true
+    ipv6:
+      enabled: false
