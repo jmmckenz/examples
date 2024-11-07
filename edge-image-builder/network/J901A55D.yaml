@@ -41,27 +41,27 @@ interfaces:
       enabled: false
     ipv6:
       enabled: false
-- name: gignic0
-  type: ethernet
-  state: up
-  mac-address: 00:62:0b:0d:bc:e4
-  ipv4:
-    address:
-    - ip: 10.21.1.2
-      prefix-length: 24
-    dhcp: false
-    enabled: true
-  ipv6:
-    enabled: false
-- name: gignic1
-  type: ethernet
-  state: up
-  mac-address: 00:62:0b:0d:bc:e5
-  ipv4:
-    address:
-    - ip: 10.21.10.2
-      prefix-length: 24
-    dhcp: false
-    enabled: true
-  ipv6:
-    enabled: false
+  - name: gignic0
+    type: ethernet
+    state: up
+    mac-address: 00:62:0b:0d:bc:e4
+    ipv4:
+      address:
+      - ip: 10.21.1.2
+        prefix-length: 24
+      dhcp: false
+      enabled: true
+    ipv6:
+      enabled: false
+  - name: gignic1
+    type: ethernet
+    state: up
+    mac-address: 00:62:0b:0d:bc:e5
+    ipv4:
+      address:
+      - ip: 10.21.10.2
+        prefix-length: 24
+      dhcp: false
+      enabled: true
+    ipv6:
+      enabled: false
