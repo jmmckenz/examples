@@ -10,6 +10,25 @@ dns-resolver:
     server:
     - 1.1.1.1
 interfaces:
+  - name: egress-bond0.101
+    type: vlan
+    state: up
+    ipv4:
+      address:
+        - ip: 10.20.11.XX
+          prefix-length: 24
+      enabled: true
+  - name: egress-bond0.102
+    type: vlan
+    state: up
+    ipv4:
+      address:
+        - ip: 10.20.11.XX
+          prefix-length: 24
+      enabled: true
+    vlan:
+      base-iface: egress-bond0
+      id: 102
   - name: egress-bond0
     type: bond
     state: up
