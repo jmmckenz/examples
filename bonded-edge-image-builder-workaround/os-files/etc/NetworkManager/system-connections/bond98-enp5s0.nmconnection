@@ -1,0 +1,10 @@
+[connection]
+id=bond98-enp5s0
+type=ethernet
+interface-name=enp5s0
+master=bond98
+slave-type=bond
+
+[ethernet]
+
+[bond-port]

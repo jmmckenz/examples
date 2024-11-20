@@ -1,0 +1,11 @@
+[connection]
+id=bond99-ens1
+type=ethernet
+interface-name=ens1
+master=bond99
+slave-type=bond
+
+[ethernet]
+
+[bond-port]
+

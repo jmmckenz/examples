@@ -1,0 +1,59 @@
+routes:
+  config:
+  - destination: 0.0.0.0/0
+    metric: 100
+    next-hop-address: 192.168.50.1
+    next-hop-interface: bond99
+    table-id: 254
+dns-resolver:
+  config:
+    server:
+    - 10.0.0.94
+interfaces:
+- name: ident-nic
+  type: ethernet
+  identifier: mac-address
+  state: down
+  mac-address: 8e:c1:dd:25:ec:e2
+  ipv4:
+    enabled: false
+  ipv6:
+    enabled: false
+- name: bond99
+  type: bond
+  state: up
+  ipv4:
+    address:
+      - ip: 192.168.50.241
+        prefix-length: 24
+    enabled: true
+  ipv6:
+    enabled: false
+  link-aggregation:
+    mode: balance-rr
+    options:
+      miimon: '140'
+- name: bond98
+  type: bond
+  state: up
+  ipv4:
+    enabled: false
+  ipv6:
+    enabled: false
+  link-aggregation:
+    mode: balance-rr
+    options:
+      miimon: '140'
+- name: bond98.101
+  type: vlan
+  state: up
+  ipv4:
+    enabled: true
+    address:
+      - ip: 10.0.0.5
+        prefix-length: 24
+  ipv6:
+    enabled: false
+  vlan:
+    base-iface: bond98
+    id: 101

@@ -1,0 +1,16 @@
+elemental:
+    registration:
+        url: https://hrancher.mclocal/elemental/registration/slb4jkcfbpzzt9mc8wt6pwxdklc7l7rg49rfck2ss8hj123456789x
+        ca-cert: |-
+            -----BEGIN CERTIFICATE-----
+            MIIBvTCCAWOgAwIBAgIBADAKBggqhkjOPQQDAjBGMRwwGgYDVQQKExNkeW5hbWlj
+            bGlzdGVuZXItb3JnMSYwJAYDVQQDDB1keW5hbWljbGlzdGVuZXItY2FAMTczMDMx
+            MDM5NTAeFw0yNDEwMzAxNNOT4YOUpLszNDEwMjgxNzQ2MzVaMEYxHDAaBgNVBAoT
+            E2R5bmFtaWNsaXN0ZW5lci1vcmcxJjAkBgNVBAMMHWR5bmFtaWNsaXN0ZW5lci1j
+            YUAxNzMwMzEwMzk1MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeocxu5Q88Gkw
+            aca7/5SRVe2IySpkTezjkOcw9pePithYUtSRpKdwFtxm9eLAoJJdXr/uOjfQGSKq
+            K5YYEvrnu6NCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYD
+            VR0OBBYEFDI0y8MvHa5kLxtPRWu5kD3ZuEZgMAoGCCqGSM49BAMCA0gAMEUCIQCe
+            tkRZ3XpkmenDqiJ6Cxqozmj3PvS0Rw8D5LV3sYufHQIgLQQRVzr1kJUbWUbHjKfp
+            7LkIAUcWARUL0BRNDajZwKY=
+            -----END CERTIFICATE-----

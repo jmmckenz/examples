@@ -1,0 +1,10 @@
+[connection]
+id=bond99-enp3s0
+type=ethernet
+interface-name=enp3s0
+master=bond99
+slave-type=bond
+
+[ethernet]
+
+[bond-port]
