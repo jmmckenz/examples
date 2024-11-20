@@ -10,6 +10,7 @@ Assumptions:
 3) Sample config is for harvester based install, adjust appropriately for bare metal or other HCI
 4) Mileage May Vary --- This is a possible workaround, may not work for all use cases, just how I was able to get it to work.
 5) Easier than the other workaround using run-once to force bond config after kexec.
+6) Any additional routes needed for multiple bonds/nics are appropriately configured.  The examples here don't account for the secondary 10.0.0.X network.
 
 Method:
 1) Pre-populate nmconnection files for bond slaves in os-files/etc/NetworkManager/system-connections/
@@ -28,7 +29,7 @@ slave-type=bond
 ```
 
 2) For the network configuration file, use the NIC that is not used as part of a bond for identifying the system. Labeled below as
-"ident-nic".  When specifying the bond definitions, **DO NOT** provide slave(port) information in the link-aggregation section(s). 
+"ident-nic".  Note that it does not have to be a through away as configured below.  If a legitimate nic needs to be configured that is not part of the bond, can setup ip and state=up and everything else as appropriate.  When specifying the bond definitions, **DO NOT** provide slave(port) information in the link-aggregation section(s). 
 Sample elemental1.mclocal.yaml
 ```
 routes:
@@ -86,7 +87,8 @@ interfaces:
 
 3) Resulting build behavior:
    When booting to an image created with this workaround, nmc will be able to identify the system based on the ident-nic.  The bond(s) should get created, but will not have any slaves assigned.  The second run of nmc will **STILL** successfully identify the system and the setup process should complete, including the setting of hostname.  During combustion, the pre-defined nmconnection files should be copied over to /etc/NetworkManager/system-connections/.  Since we have no slaves for the bond, this should leave us in a networkless state on the system.
-   Once the install media is ejected, reboot the system. When the system comes back up, NetworkManager should configure the bonds, and attach the slaves as defined in the nmconnection files provided in os-files to the corresponding interface-names.  If an nmconnection file has an interface-name configured that is not on the system, NetworkManager should ignore that connection and leave it down.  the "eth1" connection is the orphaned ident-nic.
+   
+   Once the install media is ejected, reboot the system. When the system comes back up, NetworkManager should configure the bonds, and attach the slaves as defined in the nmconnection files provided in os-files to the corresponding interface-names.  If an nmconnection file has an interface-name configured that is not on the system, NetworkManager should ignore that connection and leave it down.  the "eth1" connection in the code block below is the orphaned ident-nic.
 ```
 elemental1:/usr/local # nmcli con show
 NAME           UUID                                  TYPE      DEVICE
