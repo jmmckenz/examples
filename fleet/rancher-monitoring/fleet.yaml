@@ -1,6 +1,7 @@
 defaultNamespace: cattle-monitoring-system
 helm:
-  chart: https://charts.rancher.io/assets/rancher-monitoring/rancher-monitoring-102.0.2+up40.1.2.tgz
+  repo: https://git.rancher.io/charts
+  chart: rancher-monitoring
   releaseName: rancher-monitoring
   values:
     global:
