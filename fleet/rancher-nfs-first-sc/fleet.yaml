@@ -15,4 +15,4 @@ helm:
       reclaimPolicy: Retain
     nfs:
       server: 10.0.0.94
-      path: /nfs
+      path: /nfs2
