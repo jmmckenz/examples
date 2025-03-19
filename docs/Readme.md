@@ -88,8 +88,7 @@ rancher03   Ready    control-plane,etcd,master   80m   v1.25.10+rke2r1
 ```
 ### Install Helm
 ```
-curl -fsSL -o get_helm.sh
-https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
 ```
@@ -105,19 +104,15 @@ helm repo add jetstack https://charts.jetstack.io
 > Verify latest release of cert manager at
 > <https://github.com/cert-manager/cert-manager>
 ```
-kubectl apply -f
-https://github.com/jetstack/cert-manager/releases/download/v1.17.1/cert-manager.crds.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.17.1/cert-manager.crds.yaml
 ```
 ### Install cert-manager
 ```
-helm install cert-manager jetstack/cert-manager --namespace
-cert-manager --create-namespace --version v1.17.1
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.1
 ```
 ### Install Rancher 
 ```
-helm install rancher rancher-prime/rancher --create-namespace
---namespace cattle-system --set hostname=rancher.mycompany.com --set
-bootstrapPassword=rancher --set global.cattle.psp.enabled=false
+helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false
 ```
 ### Install Rancher with a signed cert
 
@@ -129,10 +124,7 @@ kubectl -n cattle-system create secret tls tls-rancher-ingress \
   --key=\$PATH_TO_CERT/tls.key
 ```
 ```
-helm install rancher rancher-prime/rancher --create-namespace
---namespace cattle-system --set hostname=rancher.mycompany.com --set
-bootstrapPassword=rancher --set global.cattle.psp.enabled=false --set
-ingress.tls.source=secret
+helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false --set ingress.tls.source=secret
 ```
 ### Install Rancher with a signed cert from a Private CA
 
@@ -149,10 +141,7 @@ kubectl -n cattle-system create secret generic tls-ca \
   --from-file=cacerts.pem
 ```
 ```
-helm install rancher rancher-prime/rancher --create-namespace
---namespace cattle-system --set hostname=rancher.mycompany.com --set
-bootstrapPassword=rancher --set global.cattle.psp.enabled=false --set
-ingress.tls.source=secret --set privateCA=true
+helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false --set ingress.tls.source=secret --set privateCA=true
 ```
 ## Monitor Status of Rancher Deployment
 ```
@@ -221,14 +210,11 @@ helm -n cattle-system get values rancher > values.yaml
 
 ### Run the upgrade helm command.
 ```
-helm upgrade rancher rancher-prime/rancher --namespace cattle-system
- --set hostname=rancher.company.com  --set otheroptions=value --set
-global.cattle.psp.enabled=false --version v2.10.3
+helm upgrade rancher rancher-prime/rancher --namespace cattle-system --set hostname=rancher.company.com  --set otheroptions=value --set global.cattle.psp.enabled=false --version v2.10.3
 ```
 or
 ```
-helm upgrade rancher rancher-prime/rancher --namespace
-cattle-system --version v2.10.3 -f values.yaml
+helm upgrade rancher rancher-prime/rancher --namespace cattle-system --version v2.10.3 -f values.yaml
 ```
 ### Monitor the new deployment.
 ```
@@ -241,7 +227,7 @@ https://rancher.mycompany.com/dashboard/about
 
 > You will also find the most up to date versions of the Rancher CLI on the \"about\" page for download.
 
-# **[Upgrade]{.smallcaps}** RKE2
+# **Upgrade** RKE2
 
 ## Upgrade Rancher Management Server RKE2 Version
 
@@ -337,15 +323,11 @@ generated](./images/media/image9.png)
 
 ### Get Cluster ID (returns rancher generated clusterid c-m-shw7c57m)
 ```
-curl --insecure
-https://rancher.mycompany.com/v3/clusters?name=downstream001 -H
-'content-type: application/json' -H "Authorization: Bearer
-token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs"
---insecure |jq -r .data[].id
+curl --insecure https://rancher.mycompany.com/v3/clusters?name=downstream001 -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs"--insecure |jq -r .data[].id
 ```
 ### Get Cluster Registration Curl Commands
 
-The following commands will return the curl command needed for joining base OS images to the downstream cluster. Alternatives to these commands would be nodeCommand and windowsNodeCommand to remove the "\--insecure" from the returned curl command\...
+The following commands will return the curl command needed for joining base OS images to the downstream cluster. Alternatives to these commands would be nodeCommand and windowsNodeCommand to remove the "--insecure" from the returned curl command...
 
 #### Controlplane, Etcd
 ```
