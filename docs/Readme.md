@@ -35,7 +35,7 @@ systemctl start rke2-server.service
 ### Link kubectl and copy rke2.yaml to \~/.kube/
 ```
 ln -s /var/lib/rancher/rke2/bin/kubectl /usr/local/bin/kubectl
-cd
+cd /root
 mkdir .kube
 ln -s /etc/rancher/rke2/rke2.yaml .kube/config
 chmod 600 .kube/config
