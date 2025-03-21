@@ -3,3 +3,4 @@ helm:
   repo: https://git.rancher.io/charts
   chart: rancher-monitoring-crd
   releaseName: rancher-monitoring-crd
+  releaseVersion: 105.1.2+up61.3.2
