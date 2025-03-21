@@ -4,9 +4,9 @@ helm:
   chart: nfs-subdir-external-provisioner
   values:
     storageClass:
-      name: nfs-client-1
-      provisionerName: cluster-local/nfs-subdir-external-provisioner-1
+      name: nfs-client-3
+      provisionerName: cluster-local/nfs-subdir-external-provisioner-3
       reclaimPolicy: Retain
     nfs:
       server: 10.0.0.94
-      path: /nfs2
+      path: /git
