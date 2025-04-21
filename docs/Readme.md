@@ -51,7 +51,7 @@ vi /etc/rancher/rke2/config.yaml
  
 ```
 token: my-shared-secret
-server: https://192.18.21.156:9345
+server: https://rancher.mycompany.com:9345
 tls-san:
   - rancher.mycompany.com
 ```
