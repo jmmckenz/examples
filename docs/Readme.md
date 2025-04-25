@@ -120,8 +120,8 @@ Create namespace and tls-rancher-ingress secret from crt and key
 ```
 kubectl create namespace cattle-system
 kubectl -n cattle-system create secret tls tls-rancher-ingress \
-  --cert=\$PATH_TO_CERT/tls.crt \
-  --key=\$PATH_TO_CERT/tls.key
+  --cert=$PATH_TO_CERT/tls.crt \
+  --key=$PATH_TO_CERT/tls.key
 ```
 ```
 helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false --set ingress.tls.source=secret
@@ -133,8 +133,8 @@ crt, key and Private CA root pem.
 ```
 kubectl create namespace cattle-system
 kubectl -n cattle-system create secret tls tls-rancher-ingress \
-  --cert=\$PATH_TO_CERT/tls.crt \
-  --key=\$PATH_TO_CERT/tls.key
+  --cert=$PATH_TO_CERT/tls.crt \
+  --key=$PATH_TO_CERT/tls.key
 ```
 ```
 kubectl -n cattle-system create secret generic tls-ca \
