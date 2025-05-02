@@ -185,8 +185,11 @@ volumes: []
 
 #####
 Update for your environment:
+
    address
+
    vip-address
+   
    vip-interface
    
 #### Install kube-vip
