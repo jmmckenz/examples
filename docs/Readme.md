@@ -51,7 +51,7 @@ vi /etc/rancher/rke2/config.yaml
  
 ```
 token: my-shared-secret
-server: https://rancher.mycompany.com:9345
+server: https://10.0.0.10:9345 #Use IP address of first node on port 9345
 tls-san:
   - rancher.mycompany.com
 ```
