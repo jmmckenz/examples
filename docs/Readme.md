@@ -99,6 +99,12 @@ helm repo add rancher-prime https://charts.rancher.com/server-charts/prime
 ```
 helm repo add jetstack https://charts.jetstack.io
 ```
+
+### Install kube-vip Helm Repo if applicable
+```
+helm repo add kube-vip https://kube-vip.github.io/helm-charts
+```
+
 ### Install cert-manager CRD
 
 > Verify latest release of cert manager at
@@ -110,6 +116,84 @@ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.1
 ```
 helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.1
 ```
+
+### Install Kubevip (if applicable)
+#### Install kube-vip-cloud-provider
+```
+helm install kube-vip-cloud-provider kube-vip/kube-vip-cloud-provider --namespace kube-system
+```
+#### Edit kubevip-values.yaml
+```
+vi kubevip-values.yaml
+```
+#### Add the following content and modify for your environment
+```
+affinity: {}
+config:
+  address: 192.168.50.220
+env:
+  cp_enable: 'true'
+  lb_enable: 'false'
+  lb_port: null
+  svc_election: 'false'
+  svc_enable: 'true'
+  vip_arp: 'true'
+  vip_cidr: '32'
+  vip_interface: enp1s0
+  vip_leaderelection: 'false'
+  port: '6443'
+  vip_address: 192.168.50.220
+envFrom: []
+envValueFrom: {}
+extraArgs: {}
+extraLabels: {}
+fullnameOverride: ''
+hostAliases: []
+image:
+  pullPolicy: IfNotPresent
+  repository: ghcr.io/kube-vip/kube-vip
+imagePullSecrets: []
+nameOverride: ''
+namespaceOverride: ''
+nodeSelector: {}
+podAnnotations: {}
+podMonitor:
+  annotations: {}
+  enabled: false
+  labels: {}
+podSecurityContext: {}
+priorityClassName: ''
+resources: {}
+securityContext:
+  capabilities:
+    add:
+      - NET_ADMIN
+      - NET_RAW
+    drop:
+      - ALL
+serviceAccount:
+  annotations: {}
+  create: true
+  name: ''
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Exists
+volumeMounts: []
+volumes: []
+```
+
+#####
+Update for your environment:
+   address
+   vip-address
+   vip-interface
+   
+#### Install kube-vip
+```
+helm install kube-vip kube-vip/kube-vip --namespace kube-system -f kubevip-values.yaml
+```
+
 ### Install Rancher 
 ```
 helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false
