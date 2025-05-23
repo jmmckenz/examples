@@ -4,6 +4,8 @@ package_update: true
 # disable root user
 disable_root: true
 runcmd:
+# Disable root login over ssh, both password and key based
+  - transactional-update --continue run sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /usr/etc/ssh/sshd_config
 # Temporarily register template machine with scc to enable zypper repos
   - transactional-update --continue register --url https://scc.suse.com -r SCCREGCODEXXX
 # Install system packages
