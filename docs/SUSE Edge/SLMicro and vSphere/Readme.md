@@ -2,6 +2,8 @@
 
 - [1. Build cloud-init user-data](#1-build-cloud-init-user-data)
   - [1.1. user-data example](#11-user-data-example)
+    - [1.1.1. Replace SSCREGCODEXXX with your SCC Registration Code for the SLMicro product.](#111-replace-sscregcodexxx-with-your-scc-registration-code-for-the-slmicro-product)
+    - [1.1.2. Hashed passwords generation:](#112-hashed-passwords-generation)
   - [1.2. Convert to base64](#12-convert-to-base64)
 - [2. Stage SLMicro VMDK for use in vSphere](#2-stage-slmicro-vmdk-for-use-in-vsphere)
   - [2.1. Download SLMicro VMDK](#21-download-slmicro-vmdk)
@@ -18,7 +20,78 @@
 
 # 1. Build cloud-init user-data
 ## 1.1. user-data example
+```
+#cloud-config
+package_update: true
+# disable root user
+disable_root: true
+runcmd:
+# Disable root login over ssh, both password and key based
+  - transactional-update --continue run sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /usr/etc/ssh/sshd_config
+# Temporarily register template machine with scc to enable zypper repos
+  - transactional-update --continue register --url https://scc.suse.com -r SCCREGCODEXXX
+# Install system packages
+  - transactional-update --continue --non-interactive pkg install jq net-tools ca-certificates cloud-init cloud-init-config-suse openssh-server open-vm-tools nfs-client
+# Disable Auto update transaction-update.timer
+  - transactional-update --continue run systemctl --now disable transactional-update.timer
+# Set cgroupv1 hiearachy enabled
+  - sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0"/' /etc/default/grub
+# Disable selinux
+  - sed -i 's/selinux=1/selinux=0/' /etc/default/grub
+# Enable ia32_emulation
+  - sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="ia32_emulation=on /' /etc/default/grub
+  - sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
+# Potential Work Around for fsck issue
+  - transactional-update --continue run dracut --regenerate-all -f -N
+# Deregister template machine from scc
+  - transactional-update --continue register -d --url https://scc.suse.com -r SCCREGCODEXXX
+# Rebuild bootloader
+  - transactional-update --continue run update-bootloader
+# Reset cloud-init for next build
+  - transactional-update --continue run cloud-init clean --logs
+
+users:
+# Add non-root user
+  - name: harvest
+    hashed_passwd: $6$e4RtND2Q2nDq1A4l$oeLJaqeWWIYnPHIxwcRTWrO6sqNIkmz3DroLmfxYSQTbeMq87UAL6uEQPB0BNKj.DNjVYd9Xa1xwcc9kVbBMI1
+    lock_passwd: false
+    shell: /bin/bash
+# Add sudo entry for non-root user
+    sudo: ALL=(ALL) NOPASSWD:ALL
+# Add authorized keys
+    ssh_authorized_keys:
+      - ssh-rsa
+        AAAAB3NzaC1yc2EAAAABJQAAAQEAkW7bd2iQBx8/A5pAbN207oWgcrV0lXgUHT2RZI/r/xbb9/ydLKCUBqmYhSKgBF80KJoWvE3cPeUDfThqo+qLlivc9vrTYZDMB+7wP/XGtA99jqFQsXDyC2gb8H/yKIRKu9eSrY9BHW9el80bpdxPID0YbxWYGJoxib5DO4mg3WtGIv9MeW4bvgoMj1ZhKMFrq2tYGv3P1MpuNgklwsGmUW+rIOVjhCEUz3KSr2+4EfcusOV6FD32SHkIgdeNy3C5MT1Oe6hk0bsUx/fZ9KS9YHX6b3LuIjkw1FuZBCByMgMWa4jO9QK/y76YMOFHOQtxhOszSuEkHtl6ijeejZYPtQ==
+      - ssh-rsa
+        AAAAB3NzaC1yc2EAAAADAQABAAABgQDZxAsYNJS266jPpWEsJwyibfZJN6FPNMHMxW9PlruOXJLrvdXc1wgo23d4c1BbaGiRoXW3xwd5zJwtr4dVB+QGtW1rCOYtHLGtvfIh6L5Y0SVrGOtDSVIpuwYtMnt4YBfZfBeDyJfnuvZ5E8CMNI1CekzfT7FgZnF1TQigOKgO8MUUS3HTNd3oly8D7w3QZLcjHufhFGojnZjEXfuT8tXqOaiCmlAzkdAmGczwTfXjZ3Q3KCEH20KTK31AxUP+80p75i2FE3QEMfHijXiuUbdEPTN8L2XSRe8nX7c3NZO5hWV+t9wLyfZgc5qHC5CS9fN1vGfLTpjQoaRoxKCS9dFJKVDg4huHcOz1go0YAQy6Ef+c7gkQv1ZV7VATTU9kVQWOy7+gztXnwoFXSg2qmn3JiJPVMDift2yozzpF+O4GpC9dgplBcugZT5Bg3TNPcfEBLGcNgIAC/bYma1z6+TDee0RDkWLg8JsCw554QCDI/B7Is1DZ/J4gTkmO1MNw3mM=
+
+# set desired power_state after cloud-init finishes
+power_state:
+  mode: poweroff
+  message: Powering Off for Templating
+  timeout: 10
+  condition: True
+  ```
+  
 [user-data example](../code_examples/vsphere-cloud-init-userdata-example-final.md)
+
+
+### 1.1.1. Replace SSCREGCODEXXX with your SCC Registration Code for the SLMicro product.
+
+### 1.1.2. Hashed passwords generation:
+
+Generate random salt
+
+```
+openssl rand -hex 16
+```
+
+Generate hashed password using openssl
+
+```
+openssl passwd -6 -salt 7d651f2c15538f8c2f5542c4c05d061b password
+```
+
 ## 1.2. Convert to base64
 ```
 server:/tmp # cat user-data |base64
