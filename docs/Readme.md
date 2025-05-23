@@ -1,139 +1,141 @@
-- [Install RKE2 and Rancher](#install-rke2-and-rancher)
-  - [On First Control Plane Node:](#on-first-control-plane-node)
-    - [Populate config.yaml (Optional: See Note)](#populateconfigyaml-optional-see-note)
-    - [Install RKE2](#install-rke2)
-    - [Link kubectl and copy rke2.yaml to ~/.kube/](#link-kubectl-and-copy-rke2yaml-to-kube)
-  - [On Secondary Control Plane Nodes](#on-secondary-control-plane-nodes)
-    - [Populate config.yaml](#populate-configyaml)
-    - [Install RKE2](#install-rke2-1)
-    - [Link kubectl and copy rke2.yaml to ~/.kube/](#link-kubectl-and-copy-rke2yaml-to-kube-1)
-  - [On Node with kubectl access (can be a cluster node or remote node)](#on-node-with-kubectl-accesscan-be-a-cluster-node-or-remote-node)
-    - [Verify Status of Cluster](#verify-status-of-cluster)
-    - [Install Helm](#install-helm)
-    - [Install Helm Repos](#install-helm-repos)
-    - [Install kube-vip Helm Repo if applicable](#install-kube-vip-helm-repo-if-applicable)
-    - [Install cert-manager CRD](#install-cert-manager-crd)
-    - [Install cert-manager](#install-cert-manager)
-    - [Install Kubevip (if applicable)](#install-kubevip-if-applicable)
-      - [Install kube-vip-cloud-provider](#install-kube-vip-cloud-provider)
-      - [Edit kubevip-values.yaml](#edit-kubevip-valuesyaml)
-      - [Add the following content and modify for your environment](#add-the-following-content-and-modify-for-your-environment)
-        - [](#)
-      - [Install kube-vip](#install-kube-vip)
-    - [Install Rancher](#install-rancher)
-    - [Install Rancher with a signed cert](#install-rancher-with-a-signed-cert)
-    - [Install Rancher with a signed cert from a Private CA](#install-rancher-with-a-signed-cert-from-a-private-ca)
-  - [Monitor Status of Rancher Deployment](#monitor-status-of-rancher-deployment)
-  - [Log locations and other files of interest found on the RKE2 control-plane nodes](#log-locations-and-other-files-of-interest-found-on-the-rke2-control-plane-nodes)
-- [Rancher Upgrade](#rancher-upgrade)
-  - [Backup Rancher](#backup-rancher)
-    - [Take a Rancher Backup via the Rancher Backup Operator.](#take-a-rancher-backup-via-the-rancher-backup-operator)
-  - [Verify availability of helm repository](#verify-availability-of-helm-repository)
-  - [Update helm repository](#update-helm-repository)
-  - [Retrieve Helm Options](#retrieve-helm-options)
-  - [Upgrade Rancher](#upgrade-rancher)
-    - [Run the upgrade helm command.](#run-the-upgrade-helm-command)
-    - [Monitor the new deployment.](#monitor-the-new-deployment)
-- [**Upgrade** RKE2](#upgrade-rke2)
-  - [Upgrade Rancher Management Server RKE2 Version](#upgrade-rancher-management-server-rke2-version)
-    - [Navigate to Cluster Management](#navigate-to-cluster-management)
-    - [From the Clusters Menu](#from-the-clusters-menu)
-    - [Select the version of RKE2 from the pull down and click Save](#select-the-version-of-rke2-from-the-pull-down-and-click-save)
-  - [Upgrade Downstream Cluster RKE2 Version](#upgrade-downstream-cluster-rke2-version)
-    - [Navigate to Cluster Management](#navigate-to-cluster-management-1)
-    - [From the Clusters Menu](#from-the-clusters-menu-1)
-    - [Select the version of RKE2 from the pull down and click Save](#select-the-version-of-rke2-from-the-pull-down-and-click-save-1)
-- [Downstream Cluster Build](#downstream-cluster-build)
-  - [Custom Cluster Registration from GUI](#custom-cluster-registration-from-gui)
-    - [Navigate to Cluster Management](#navigate-to-cluster-management-2)
-    - [From the Clusters Menu Click Create](#from-the-clusters-menu-click-create)
-    - [From Cluster Create Menu Click Custom](#from-cluster-create-menu-click-custom)
-    - [Create Cluster](#create-cluster)
-    - [The resulting page once the Cluster resource is created](#the-resulting-page-once-the-cluster-resource-is-created)
-  - [Custom Cluster Registration from API calls](#custom-cluster-registration-from-api-calls)
-    - [Creating Cluster through Rancher CLI or by API call documentation](#creating-cluster-through-rancher-cli-or-by-api-call-documentation)
-    - [Example for getting custom cluster registration command:](#example-for-getting-custom-cluster-registration-command)
-    - [Get Cluster ID (returns rancher generated clusterid c-m-shw7c57m)](#get-cluster-id-returns-rancher-generated-clusterid-c-m-shw7c57m)
-    - [Get Cluster Registration Curl Commands](#get-cluster-registration-curl-commands)
-      - [Controlplane, Etcd](#controlplane-etcd)
-      - [Controlplane, Etcd, and Worker](#controlplane-etcd-and-worker)
-      - [Worker Only](#worker-only)
-      - [Windows Node](#windows-node)
-    - [Example Output:](#example-output)
-- [Longhorn Backup To MINIO](#longhorn-backup-to-minio)
-  - [Longhorn MINIO Setup](#longhorn-minio-setup)
-    - [Create Minio Bucket](#create-minio-bucket)
-    - [Create Access Key and Secret Key](#create-access-key-and-secret-key)
-    - [In Minio settings](#in-minio-settings)
-    - [Recorded Information So Far](#recorded-information-so-far)
-    - [Encode information for use in creating secret](#encode-information-for-use-in-creating-secret)
-    - [Create Secret longhorn-minio-credential.yaml](#create-secret-longhorn-minio-credentialyaml)
-    - [Apply secret](#apply-secret)
-    - [Configure Longhorn for Backups](#configure-longhorn-for-backups)
-      - [In Longhorn Settings (General Settings Page) scroll down to Backup Target](#in-longhorn-settings-general-settings-page-scroll-down-to-backup-target)
-      - [Modify the Backup Target and Credential](#modify-the-backup-target-and-credential)
-- [Harbor Installation via HELM](#harbor-installation-via-helm)
-  - [Install Harbor from Rancher Partner Charts](#install-harbor-from-rancher-partner-charts)
-    - [Create Namespace for Harbor Installation](#create-namespace-for-harbor-installation)
-    - [From Rancher UI Navigate to Apps 🡪 Charts](#from-rancher-ui-navigate-to-apps--charts)
-    - [Click Install](#click-install)
-    - [Enter namespace and deployment name for harbor and click Next](#enter-namespace-and-deployment-name-for-harbor-and-click-next)
-  - [Modify Harber Values](#modify-harber-values)
-    - [Customize helm values for installation.](#customize-helm-values-for-installation)
-    - [Consider changing passwords](#consider-changing-passwords)
-    - [Update Node Selectors](#update-node-selectors)
-    - [Other lines of interest](#other-lines-of-interest)
-    - [See Appendix A for example values file](#see-appendix-a-for-example-values-file)
-  - [Perform Install](#perform-install)
-    - [Click Install once all edits have been made to the values](#click-install-once-all-edits-have-been-made-to-the-values)
-- [Neuvector Installation](#neuvector-installation)
-  - [Create the neuvector project](#create-the-neuvector-project)
-  - [Install Nuevector from Cluster Tools](#install-nuevector-from-cluster-tools)
-- [Rolling Restart Procedure](#rolling-restart-procedure)
-  - [Restart Rancher Management Cluster](#restart-rancher-management-cluster)
-    - [Control-Plane](#control-plane)
-  - [Restart Downstream Cluster](#restart-downstream-cluster)
-    - [Control-Plane](#control-plane-1)
-    - [Worker](#worker)
-- [Shutdown and Startup](#shutdown-and-startup)
-  - [Shutdown](#shutdown)
-    - [Shutdown Worker Nodes](#shutdown-worker-nodes)
-    - [Shutdown ControlPlane Nodes One At A Time](#shutdown-controlplane-nodes-one-at-a-time)
-  - [Startup](#startup)
-    - [Startup ControlPlane Nodes One At A Time](#startup-controlplane-nodes-one-at-a-time)
-    - [Startup Worker Nodes](#startup-worker-nodes)
-- [Rancher App Charts](#rancher-app-charts)
-  - [Rancher provided Helm Charts](#rancher-provided-helm-charts)
-  - [Recommended Tools](#recommended-tools)
-- [APPENDIX A -- Harbor Values](#appendix-a----harbor-values)
-- [Appendix B - Logging Configs](#appendix-b---logging-configs)
-  - [ClusterFlow (Active -- Cluster scope)](#clusterflow-active----cluster-scope)
-  - [ClusterOutput (Active -- Cluster Scope)](#clusteroutput-active----cluster-scope)
-  - [Flow (Example -- Namespace Scope)](#flow-example----namespace-scope)
-  - [Output (Example -- Namespace Scope)](#output-example----namespace-scope)
-- [Appendix C -- Training and References](#appendix-c----training-and-references)
-  - [Rancher Documentation](#rancher-documentation)
-  - [RKE2 Documentation](#rke2-documentation)
-  - [Harvester Documentation](#harvester-documentation)
-  - [Longhorn Documentation](#longhorn-documentation)
-  - [Neuvector Documentation](#neuvector-documentation)
-  - [Suse Events](#suse-events)
-  - [Rancher Academy](#rancher-academy)
-  - [Neuvector Youtube](#neuvector-youtube)
-  - [Rancher Github](#rancher-github)
-  - [RKE2 Github](#rke2-github)
-  - [Neuvector Github](#neuvector-github)
-  - [Longhorn Github](#longhorn-github)
-  - [Harvester Github](#harvester-github)
-  - [CIS Self Assessment](#cis-self-assessment)
+<font size="16"> Table of Contents</font> 
 
-# Install RKE2 and Rancher
+- [1. Install RKE2 and Rancher](#1-install-rke2-and-rancher)
+  - [1.1. On First Control Plane Node:](#11-on-first-control-plane-node)
+    - [1.1.1. Populate config.yaml (Optional: See Note)](#111-populateconfigyaml-optional-see-note)
+    - [1.1.2. Install RKE2](#112-install-rke2)
+    - [1.1.3. Link kubectl and copy rke2.yaml to ~/.kube/](#113-link-kubectl-and-copy-rke2yaml-to-kube)
+  - [1.2. On Secondary Control Plane Nodes](#12-on-secondary-control-plane-nodes)
+    - [1.2.1. Populate config.yaml](#121-populate-configyaml)
+    - [1.2.2. Install RKE2](#122-install-rke2)
+    - [1.2.3. Link kubectl and copy rke2.yaml to ~/.kube/](#123-link-kubectl-and-copy-rke2yaml-to-kube)
+  - [1.3. On Node with kubectl access (can be a cluster node or remote node)](#13-on-node-with-kubectl-accesscan-be-a-cluster-node-or-remote-node)
+    - [1.3.1. Verify Status of Cluster](#131-verify-status-of-cluster)
+    - [1.3.2. Install Helm](#132-install-helm)
+    - [1.3.3. Install Helm Repos](#133-install-helm-repos)
+    - [1.3.4. Install kube-vip Helm Repo if applicable](#134-install-kube-vip-helm-repo-if-applicable)
+    - [1.3.5. Install cert-manager CRD](#135-install-cert-manager-crd)
+    - [1.3.6. Install cert-manager](#136-install-cert-manager)
+    - [1.3.7. Install Kubevip (if applicable)](#137-install-kubevip-if-applicable)
+      - [1.3.7.1. Install kube-vip-cloud-provider](#1371-install-kube-vip-cloud-provider)
+      - [1.3.7.2. Edit kubevip-values.yaml](#1372-edit-kubevip-valuesyaml)
+      - [1.3.7.3. Add the following content and modify for your environment](#1373-add-the-following-content-and-modify-for-your-environment)
+        - [](#)
+      - [1.3.7.4. Install kube-vip](#1374-install-kube-vip)
+    - [1.3.8. Install Rancher](#138-install-rancher)
+    - [1.3.9. Install Rancher with a signed cert](#139-install-rancher-with-a-signed-cert)
+    - [1.3.10. Install Rancher with a signed cert from a Private CA](#1310-install-rancher-with-a-signed-cert-from-a-private-ca)
+  - [1.4. Monitor Status of Rancher Deployment](#14-monitor-status-of-rancher-deployment)
+  - [1.5. Log locations and other files of interest found on the RKE2 control-plane nodes](#15-log-locations-and-other-files-of-interest-found-on-the-rke2-control-plane-nodes)
+- [2. Rancher Upgrade](#2-rancher-upgrade)
+  - [2.1. Backup Rancher](#21-backup-rancher)
+    - [2.1.1. Take a Rancher Backup via the Rancher Backup Operator.](#211-take-a-rancher-backup-via-the-rancher-backup-operator)
+  - [2.2. Verify availability of helm repository](#22-verify-availability-of-helm-repository)
+  - [2.3. Update helm repository](#23-update-helm-repository)
+  - [2.4. Retrieve Helm Options](#24-retrieve-helm-options)
+  - [2.5. Upgrade Rancher](#25-upgrade-rancher)
+    - [2.5.1. Run the upgrade helm command.](#251-run-the-upgrade-helm-command)
+    - [2.5.2. Monitor the new deployment.](#252-monitor-the-new-deployment)
+- [3. **Upgrade** RKE2](#3-upgrade-rke2)
+  - [3.1. Upgrade Rancher Management Server RKE2 Version](#31-upgrade-rancher-management-server-rke2-version)
+    - [3.1.1. Navigate to Cluster Management](#311-navigate-to-cluster-management)
+    - [3.1.2. From the Clusters Menu](#312-from-the-clusters-menu)
+    - [3.1.3. Select the version of RKE2 from the pull down and click Save](#313-select-the-version-of-rke2-from-the-pull-down-and-click-save)
+  - [3.2. Upgrade Downstream Cluster RKE2 Version](#32-upgrade-downstream-cluster-rke2-version)
+    - [3.2.1. Navigate to Cluster Management](#321-navigate-to-cluster-management)
+    - [3.2.2. From the Clusters Menu](#322-from-the-clusters-menu)
+    - [3.2.3. Select the version of RKE2 from the pull down and click Save](#323-select-the-version-of-rke2-from-the-pull-down-and-click-save)
+- [4. Downstream Cluster Build](#4-downstream-cluster-build)
+  - [4.1. Custom Cluster Registration from GUI](#41-custom-cluster-registration-from-gui)
+    - [4.1.1. Navigate to Cluster Management](#411-navigate-to-cluster-management)
+    - [4.1.2. From the Clusters Menu Click Create](#412-from-the-clusters-menu-click-create)
+    - [4.1.3. From Cluster Create Menu Click Custom](#413-from-cluster-create-menu-click-custom)
+    - [4.1.4. Create Cluster](#414-create-cluster)
+    - [4.1.5. The resulting page once the Cluster resource is created](#415-the-resulting-page-once-the-cluster-resource-is-created)
+  - [4.2. Custom Cluster Registration from API calls](#42-custom-cluster-registration-from-api-calls)
+    - [4.2.1. Creating Cluster through Rancher CLI or by API call documentation](#421-creating-cluster-through-rancher-cli-or-by-api-call-documentation)
+    - [4.2.2. Example for getting custom cluster registration command:](#422-example-for-getting-custom-cluster-registration-command)
+    - [4.2.3. Get Cluster ID (returns rancher generated clusterid c-m-shw7c57m)](#423-get-cluster-id-returns-rancher-generated-clusterid-c-m-shw7c57m)
+    - [4.2.4. Get Cluster Registration Curl Commands](#424-get-cluster-registration-curl-commands)
+      - [4.2.4.1. Controlplane, Etcd](#4241-controlplane-etcd)
+      - [4.2.4.2. Controlplane, Etcd, and Worker](#4242-controlplane-etcd-and-worker)
+      - [4.2.4.3. Worker Only](#4243-worker-only)
+      - [4.2.4.4. Windows Node](#4244-windows-node)
+    - [4.2.5. Example Output:](#425-example-output)
+- [5. Longhorn Backup To MINIO](#5-longhorn-backup-to-minio)
+  - [5.1. Longhorn MINIO Setup](#51-longhorn-minio-setup)
+    - [5.1.1. Create Minio Bucket](#511-create-minio-bucket)
+    - [5.1.2. Create Access Key and Secret Key](#512-create-access-key-and-secret-key)
+    - [5.1.3. In Minio settings](#513-in-minio-settings)
+    - [5.1.4. Recorded Information So Far](#514-recorded-information-so-far)
+    - [5.1.5. Encode information for use in creating secret](#515-encode-information-for-use-in-creating-secret)
+    - [5.1.6. Create Secret longhorn-minio-credential.yaml](#516-create-secret-longhorn-minio-credentialyaml)
+    - [5.1.7. Apply secret](#517-apply-secret)
+    - [5.1.8. Configure Longhorn for Backups](#518-configure-longhorn-for-backups)
+      - [5.1.8.1. In Longhorn Settings (General Settings Page) scroll down to Backup Target](#5181-in-longhorn-settings-general-settings-page-scroll-down-to-backup-target)
+      - [5.1.8.2. Modify the Backup Target and Credential](#5182-modify-the-backup-target-and-credential)
+- [6. Harbor Installation via HELM](#6-harbor-installation-via-helm)
+  - [6.1. Install Harbor from Rancher Partner Charts](#61-install-harbor-from-rancher-partner-charts)
+    - [6.1.1. Create Namespace for Harbor Installation](#611-create-namespace-for-harbor-installation)
+    - [6.1.2. From Rancher UI Navigate to Apps 🡪 Charts](#612-from-rancher-ui-navigate-to-apps--charts)
+    - [6.1.3. Click Install](#613-click-install)
+    - [6.1.4. Enter namespace and deployment name for harbor and click Next](#614-enter-namespace-and-deployment-name-for-harbor-and-click-next)
+  - [6.2. Modify Harber Values](#62-modify-harber-values)
+    - [6.2.1. Customize helm values for installation.](#621-customize-helm-values-for-installation)
+    - [6.2.2. Consider changing passwords](#622-consider-changing-passwords)
+    - [6.2.3. Update Node Selectors](#623-update-node-selectors)
+    - [6.2.4. Other lines of interest](#624-other-lines-of-interest)
+    - [6.2.5. See Appendix A for example values file](#625-see-appendix-a-for-example-values-file)
+  - [6.3. Perform Install](#63-perform-install)
+    - [6.3.1. Click Install once all edits have been made to the values](#631-click-install-once-all-edits-have-been-made-to-the-values)
+- [7. Neuvector Installation](#7-neuvector-installation)
+  - [7.1. Create the neuvector project](#71-create-the-neuvector-project)
+  - [7.2. Install Nuevector from Cluster Tools](#72-install-nuevector-from-cluster-tools)
+- [8. Rolling Restart Procedure](#8-rolling-restart-procedure)
+  - [8.1. Restart Rancher Management Cluster](#81-restart-rancher-management-cluster)
+    - [8.1.1. Control-Plane](#811-control-plane)
+  - [8.2. Restart Downstream Cluster](#82-restart-downstream-cluster)
+    - [8.2.1. Control-Plane](#821-control-plane)
+    - [8.2.2. Worker](#822-worker)
+- [9. Shutdown and Startup](#9-shutdown-and-startup)
+  - [9.1. Shutdown](#91-shutdown)
+    - [9.1.1. Shutdown Worker Nodes](#911-shutdown-worker-nodes)
+    - [9.1.2. Shutdown ControlPlane Nodes One At A Time](#912-shutdown-controlplane-nodes-one-at-a-time)
+  - [9.2. Startup](#92-startup)
+    - [9.2.1. Startup ControlPlane Nodes One At A Time](#921-startup-controlplane-nodes-one-at-a-time)
+    - [9.2.2. Startup Worker Nodes](#922-startup-worker-nodes)
+- [10. Rancher App Charts](#10-rancher-app-charts)
+  - [10.1. Rancher provided Helm Charts](#101-rancher-provided-helm-charts)
+  - [10.2. Recommended Tools](#102-recommended-tools)
+- [11. APPENDIX A -- Harbor Values](#11-appendix-a----harbor-values)
+- [12. Appendix B - Logging Configs](#12-appendix-b---logging-configs)
+  - [12.1. ClusterFlow (Active -- Cluster scope)](#121-clusterflow-active----cluster-scope)
+  - [12.2. ClusterOutput (Active -- Cluster Scope)](#122-clusteroutput-active----cluster-scope)
+  - [12.3. Flow (Example -- Namespace Scope)](#123-flow-example----namespace-scope)
+  - [12.4. Output (Example -- Namespace Scope)](#124-output-example----namespace-scope)
+- [13. Appendix C -- Training and References](#13-appendix-c----training-and-references)
+  - [13.1. Rancher Documentation](#131-rancher-documentation)
+  - [13.2. RKE2 Documentation](#132-rke2-documentation)
+  - [13.3. Harvester Documentation](#133-harvester-documentation)
+  - [13.4. Longhorn Documentation](#134-longhorn-documentation)
+  - [13.5. Neuvector Documentation](#135-neuvector-documentation)
+  - [13.6. Suse Events](#136-suse-events)
+  - [13.7. Rancher Academy](#137-rancher-academy)
+  - [13.8. Neuvector Youtube](#138-neuvector-youtube)
+  - [13.9. Rancher Github](#139-rancher-github)
+  - [13.10. RKE2 Github](#1310-rke2-github)
+  - [13.11. Neuvector Github](#1311-neuvector-github)
+  - [13.12. Longhorn Github](#1312-longhorn-github)
+  - [13.13. Harvester Github](#1313-harvester-github)
+  - [13.14. CIS Self Assessment](#1314-cis-self-assessment)
+
+# 1. Install RKE2 and Rancher
 
 Verify /var/lib/rancher space on all nodes. Recommended 150GB -- 200GB.
 
-## On First Control Plane Node:
+## 1.1. On First Control Plane Node:
 
-### Populate config.yaml (Optional: See Note)
+### 1.1.1. Populate config.yaml (Optional: See Note)
 ```
 mkdir -p /etc/rancher/rke2/
 vi /etc/rancher/rke2/config.yaml
@@ -154,13 +156,13 @@ tls-san:
 > The process above allows for the token to be predefined.
 > The example "my-shared-token" will be used by the other nodes to join the cluster.  This token is interpreted literally, so it can have a plain text value or be a base64 encoded string.
 
-### Install RKE2
+### 1.1.2. Install RKE2
 ```
 curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE=server sh -
 systemctl enable rke2-server.service
 systemctl start rke2-server.service
 ```
-### Link kubectl and copy rke2.yaml to \~/.kube/
+### 1.1.3. Link kubectl and copy rke2.yaml to \~/.kube/
 ```
 ln -s /var/lib/rancher/rke2/bin/kubectl /usr/local/bin/kubectl
 cd /root
@@ -169,9 +171,9 @@ ln -s /etc/rancher/rke2/rke2.yaml .kube/config
 chmod 600 .kube/config
 ```
 
-## On Secondary Control Plane Nodes
+## 1.2. On Secondary Control Plane Nodes
 
-### Populate config.yaml
+### 1.2.1. Populate config.yaml
 ```
 mkdir -p /etc/rancher/rke2/
 vi /etc/rancher/rke2/config.yaml
@@ -187,13 +189,13 @@ tls-san:
 > token found in /var/lib/rancher/rke2/server/token from the Primary
 > node.
 
-### Install RKE2
+### 1.2.2. Install RKE2
 ```
 curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE=server sh -
 systemctl enable rke2-server.service
 systemctl start rke2-server.service
 ```
-### Link kubectl and copy rke2.yaml to \~/.kube/
+### 1.2.3. Link kubectl and copy rke2.yaml to \~/.kube/
 ```
 ln -s /var/lib/rancher/rke2/bin/kubectl /usr/local/bin/kubectl
 cd /root
@@ -201,9 +203,9 @@ mkdir .kube
 ln -s /etc/rancher/rke2/rke2.yaml .kube/config
 chmod 600 .kube/config
 ```
-## On Node with kubectl access (can be a cluster node or remote node)
+## 1.3. On Node with kubectl access (can be a cluster node or remote node)
 
-### Verify Status of Cluster
+### 1.3.1. Verify Status of Cluster
 ```
 kubectl get nodes
 ```
@@ -214,13 +216,13 @@ rancher01   Ready    control-plane,etcd,master   88m   v1.25.10+rke2r1
 rancher02   Ready    control-plane,etcd,master   80m   v1.25.10+rke2r1
 rancher03   Ready    control-plane,etcd,master   80m   v1.25.10+rke2r1
 ```
-### Install Helm
+### 1.3.2. Install Helm
 ```
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
 ```
-### Install Helm Repos
+### 1.3.3. Install Helm Repos
 ```
 helm repo add rancher-prime https://charts.rancher.com/server-charts/prime
 ```
@@ -228,33 +230,33 @@ helm repo add rancher-prime https://charts.rancher.com/server-charts/prime
 helm repo add jetstack https://charts.jetstack.io
 ```
 
-### Install kube-vip Helm Repo if applicable
+### 1.3.4. Install kube-vip Helm Repo if applicable
 ```
 helm repo add kube-vip https://kube-vip.github.io/helm-charts
 ```
 
-### Install cert-manager CRD
+### 1.3.5. Install cert-manager CRD
 
 > Verify latest release of cert manager at
 > <https://github.com/cert-manager/cert-manager>
 ```
 kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.17.1/cert-manager.crds.yaml
 ```
-### Install cert-manager
+### 1.3.6. Install cert-manager
 ```
 helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.1
 ```
 
-### Install Kubevip (if applicable)
-#### Install kube-vip-cloud-provider
+### 1.3.7. Install Kubevip (if applicable)
+#### 1.3.7.1. Install kube-vip-cloud-provider
 ```
 helm install kube-vip-cloud-provider kube-vip/kube-vip-cloud-provider --namespace kube-system
 ```
-#### Edit kubevip-values.yaml
+#### 1.3.7.2. Edit kubevip-values.yaml
 ```
 vi kubevip-values.yaml
 ```
-#### Add the following content and modify for your environment
+#### 1.3.7.3. Add the following content and modify for your environment
 ```
 affinity: {}
 config:
@@ -320,16 +322,16 @@ Update for your environment:
    
    vip-interface
    
-#### Install kube-vip
+#### 1.3.7.4. Install kube-vip
 ```
 helm install kube-vip kube-vip/kube-vip --namespace kube-system -f kubevip-values.yaml
 ```
 
-### Install Rancher 
+### 1.3.8. Install Rancher 
 ```
 helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false
 ```
-### Install Rancher with a signed cert
+### 1.3.9. Install Rancher with a signed cert
 
 Create namespace and tls-rancher-ingress secret from crt and key
 ```
@@ -341,7 +343,7 @@ kubectl -n cattle-system create secret tls tls-rancher-ingress \
 ```
 helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false --set ingress.tls.source=secret
 ```
-### Install Rancher with a signed cert from a Private CA
+### 1.3.10. Install Rancher with a signed cert from a Private CA
 
 Create namespace, tls-rancher-ingress secret, and tls-ca secret from
 crt, key and Private CA root pem.
@@ -358,7 +360,7 @@ kubectl -n cattle-system create secret generic tls-ca \
 ```
 helm install rancher rancher-prime/rancher --create-namespace --namespace cattle-system --set hostname=rancher.mycompany.com --set bootstrapPassword=rancher --set global.cattle.psp.enabled=false --set ingress.tls.source=secret --set privateCA=true
 ```
-## Monitor Status of Rancher Deployment
+## 1.4. Monitor Status of Rancher Deployment
 ```
 kubectl get pods -n cattle-system
 ```
@@ -373,7 +375,7 @@ rancher-webhook-64666d6db6-nfq7t   1/1     Running     0          76m
 ```
 > You should see 3 rancher pods, 1 rancher-webhook pod, and possibly some transient helm-operation pods used by the system to install the components of rancher from the helm chart. 
 
-## Log locations and other files of interest found on the RKE2 control-plane nodes
+## 1.5. Log locations and other files of interest found on the RKE2 control-plane nodes
 
 /var/lib/rancher/rke2/agent/logs/
 /var/lib/rancher/rke2/agent/containerd/containerd.log
@@ -381,13 +383,13 @@ rancher-webhook-64666d6db6-nfq7t   1/1     Running     0          76m
 /var/lib/rancher/rke2/server/token  #file containing the token used byother nodes to join the cluster (as seen in config.yaml)
 /var/lib/rancher/rke2/server/manifests/  #location to place manifests for auto deployment to the cluster
 
-# Rancher Upgrade
+# 2. Rancher Upgrade
 
-## Backup Rancher
+## 2.1. Backup Rancher
 
 [\*\*\*\* Add section for Airgap considerations \*\*\*\*]{.mark}
 
-### Take a Rancher Backup via the Rancher Backup Operator. 
+### 2.1.1. Take a Rancher Backup via the Rancher Backup Operator. 
 
 Install Rancher Backup Operator through UI
 
@@ -399,15 +401,15 @@ Install Rancher Backup Operator through command-line
 >
 > <https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/migrate-rancher-to-new-cluster#1-install-the-rancher-backup-helm-chart>
 
-## Verify availability of helm repository
+## 2.2. Verify availability of helm repository
 ```
 helm repo list
 ```
-## Update helm repository
+## 2.3. Update helm repository
 ```
 helm repo update
 ```
-## Retrieve Helm Options
+## 2.4. Retrieve Helm Options
 
 Make sure you save the \--set options you used during the initial
 install. You will need to use the same options when you upgrade Rancher to new versions with Helm.
@@ -421,9 +423,9 @@ helm -n cattle-system get values rancher > values.yaml
 >
 > Save values.yaml to some kind of source control (git) as an artifact for your system builds if not already done.
 
-## Upgrade Rancher
+## 2.5. Upgrade Rancher
 
-### Run the upgrade helm command.
+### 2.5.1. Run the upgrade helm command.
 ```
 helm upgrade rancher rancher-prime/rancher --namespace cattle-system --set hostname=rancher.company.com  --set otheroptions=value --set global.cattle.psp.enabled=false --version v2.10.3
 ```
@@ -431,7 +433,7 @@ or
 ```
 helm upgrade rancher rancher-prime/rancher --namespace cattle-system --version v2.10.3 -f values.yaml
 ```
-### Monitor the new deployment.
+### 2.5.2. Monitor the new deployment.
 ```
 kubectl get pods -n cattle-system -w
 ```
@@ -442,16 +444,16 @@ https://rancher.mycompany.com/dashboard/about
 
 > You will also find the most up to date versions of the Rancher CLI on the \"about\" page for download.
 
-# **Upgrade** RKE2
+# 3. **Upgrade** RKE2
 
-## Upgrade Rancher Management Server RKE2 Version
+## 3.1. Upgrade Rancher Management Server RKE2 Version
 
-### Navigate to Cluster Management
+### 3.1.1. Navigate to Cluster Management
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image1.png)
 
-### From the Clusters Menu
+### 3.1.2. From the Clusters Menu
 
 > Edit Config for the local cluster
 
@@ -460,26 +462,24 @@ generated](./images/media/image2.png)
 
 [\*\*\*\*ADD SECTION FOR CLUSTER OWNER \*\*\*\*]{.mark}
 
-### Select the version of RKE2 from the pull down and click Save
+### 3.1.3. Select the version of RKE2 from the pull down and click Save
 
-![A screenshot of a computer Description automatically
-generated](./images/media/image3.png)
 
-## Upgrade Downstream Cluster RKE2 Version
+## 3.2. Upgrade Downstream Cluster RKE2 Version
 
-### Navigate to Cluster Management
+### 3.2.1. Navigate to Cluster Management
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image1.png)
 
-### From the Clusters Menu
+### 3.2.2. From the Clusters Menu
 
 > Edit Config for the downstream cluster
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image4.png)
 
-### Select the version of RKE2 from the pull down and click Save
+### 3.2.3. Select the version of RKE2 from the pull down and click Save
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image5.png)
@@ -487,26 +487,26 @@ generated](./images/media/image5.png)
 [\*\*\*\* ADD SECTION FOR RKE2 STANDALONE CLUSTER UPGRADES AIRGAP and
 NORMAL \*\*\*\*]{.mark}
 
-# Downstream Cluster Build
+# 4. Downstream Cluster Build
 
-## Custom Cluster Registration from GUI
+## 4.1. Custom Cluster Registration from GUI
 
-### Navigate to Cluster Management
+### 4.1.1. Navigate to Cluster Management
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image1.png)
 
-### From the Clusters Menu Click Create
+### 4.1.2. From the Clusters Menu Click Create
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image6.png)
 
-### From Cluster Create Menu Click Custom
+### 4.1.3. From Cluster Create Menu Click Custom
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image7.png)
 
-### Create Cluster
+### 4.1.4. Create Cluster
 
 > Provide a Cluster Name, desired RKE2 version, and any other customized information
 >
@@ -515,7 +515,7 @@ generated](./images/media/image7.png)
 ![A screenshot of a computer Description automatically
 generated](./images/media/image8.png)
 
-### The resulting page once the Cluster resource is created
+### 4.1.5. The resulting page once the Cluster resource is created
 
 > Check the box next to "Insecure" if you need to skip TLS verification
 >
@@ -524,43 +524,43 @@ generated](./images/media/image8.png)
 ![A screenshot of a computer Description automatically
 generated](./images/media/image9.png)
 
-## Custom Cluster Registration from API calls
+## 4.2. Custom Cluster Registration from API calls
 
-### Creating Cluster through Rancher CLI or by API call documentation
+### 4.2.1. Creating Cluster through Rancher CLI or by API call documentation
 
 <https://www.suse.com/support/kb/doc/?id=000020121>
 
-### Example for getting custom cluster registration command:
+### 4.2.2. Example for getting custom cluster registration command:
 
 \* Rancher URI = rancher.mycompany.com
 
 \* Downstream Cluster name = downstream001
 
-### Get Cluster ID (returns rancher generated clusterid c-m-shw7c57m)
+### 4.2.3. Get Cluster ID (returns rancher generated clusterid c-m-shw7c57m)
 ```
 curl --insecure https://rancher.mycompany.com/v3/clusters?name=downstream001 -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs"--insecure |jq -r .data[].id
 ```
-### Get Cluster Registration Curl Commands
+### 4.2.4. Get Cluster Registration Curl Commands
 
 The following commands will return the curl command needed for joining base OS images to the downstream cluster. Alternatives to these commands would be nodeCommand and windowsNodeCommand to remove the "--insecure" from the returned curl command...
 
-#### Controlplane, Etcd
+#### 4.2.4.1. Controlplane, Etcd
 ```
 curl --insecure https://rancher.mycompany.com/v3/clusters/c-m-shw7c57m/clusterregistrationtokens -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs" --insecure |jq -r '.data[] |select(.name |contains("crt-")) | .insecureNodeCommand + " --controlplane --etcd"'
 ```
-#### Controlplane, Etcd, and Worker
+#### 4.2.4.2. Controlplane, Etcd, and Worker
 ```
 curl --insecure https://rancher.mycompany.com/v3/clusters/c-m-shw7c57m/clusterregistrationtokens -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs" --insecure |jq -r '.data[] |select(.name |contains("crt-")) | .insecureNodeCommand + " --controlplane --etcd --worker"'
 ```
-#### Worker Only
+#### 4.2.4.3. Worker Only
 ```
 curl --insecure https://rancher.mycompany.com/v3/clusters/c-m-shw7c57m/clusterregistrationtokens -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs" --insecure |jq -r '.data[] |select(.name |contains("crt-")) | .insecureNodeCommand + " --worker"'
 ```
-#### Windows Node
+#### 4.2.4.4. Windows Node
 ```
 curl --insecure https://rancher.mycompany.com/v3/clusters/c-m-shw7c57m/clusterregistrationtokens -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs" --insecure |jq -r '.data[] |select(.name |contains("crt-")) | .insecureWindowsNodeCommand 
 ```
-### Example Output:
+### 4.2.5. Example Output:
 ```
 [root@rancher01 ~]#  curl --insecure https://rancher.mycompany.com/v3/clusters?name=downstream001 -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs" --insecure |jq -r .data[].id
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -596,26 +596,26 @@ c-m-shw7c57m
 100 10861    0 10861    0     0   165k      0 --:--:-- --:--:-- --:--:--  165k
  curl.exe --insecure -fL https://rancher.mycompany.com/wins-agent-install.ps1 -o install.ps1; Set-ExecutionPolicy Bypass -Scope Process -Force; ./install.ps1 -Server https://rancher.mycompany.com -Label 'cattle.io/os=windows' -Token 5q2499v9xlqfhvsjrblkzw2dnq5kz5275h54gsb5nnfc665cv2kvtt -Worker -CaChecksum 5c02c9d41756c2cae614be39ac9444ec093d3a69a7b1edc931223a7f5391353c
 ```
-# Longhorn Backup To MINIO
+# 5. Longhorn Backup To MINIO
 
 REF:
 <https://oopflow.medium.com/how-to-backup-longhorn-to-minio-s3-9c8c126ae92e>
 
-## Longhorn MINIO Setup
+## 5.1. Longhorn MINIO Setup
 
-### Create Minio Bucket
+### 5.1.1. Create Minio Bucket
 
 > Example: daily-longhorn-backup
 
-### Create Access Key and Secret Key
+### 5.1.2. Create Access Key and Secret Key
 
-### In Minio settings
+### 5.1.3. In Minio settings
 
 Set a Region to onprep-sp
 
 Set Description for Region
 
-### Recorded Information So Far
+### 5.1.4. Recorded Information So Far
 ```
 Bucket Name: daily-longhorn-backup
 Url: http://minio.mycompany.com:9000/
@@ -623,13 +623,13 @@ AccessKey: \<FROM_MINIO_UI\>
 SecretKey: \<FROM_MINIO_UI\>
 Region: us-east-01
 ```
-### Encode information for use in creating secret
+### 5.1.5. Encode information for use in creating secret
 ```
 echo -n http://minio.mycompany.com:9000/ \|base64
 echo -n ACCESSKEY \|base64
 echo -n SECRETKEY \|base64
 ```
-### Create Secret longhorn-minio-credential.yaml
+### 5.1.6. Create Secret longhorn-minio-credential.yaml
 ```
 apiVersion: v1
 kind: Secret
@@ -642,18 +642,18 @@ data:
   AWS_SECRET_ACCESS_KEY: BASE64_OF_SECRETKEY
   AWS_ENDPOINTS: BASE64_OF_URL
 ```
-### Apply secret
+### 5.1.7. Apply secret
 ```
 kubectl apply -f longhorn-minio-credentials.yaml
 ```
-### Configure Longhorn for Backups
+### 5.1.8. Configure Longhorn for Backups
 
-#### In Longhorn Settings (General Settings Page) scroll down to Backup Target
+#### 5.1.8.1. In Longhorn Settings (General Settings Page) scroll down to Backup Target
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image10.png)
 
-#### Modify the Backup Target and Credential
+#### 5.1.8.2. Modify the Backup Target and Credential
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image11.png)
@@ -666,7 +666,7 @@ Backup Target Credential
 
     longhorn-minio-credentials
 
-# Harbor Installation via HELM
+# 6. Harbor Installation via HELM
 
 REF: <https://github.com/goharbor/harbor-helm/blob/main/values.yaml>
 
@@ -674,15 +674,15 @@ REF: <https://github.com/goharbor/harbor-helm/blob/main/values.yaml>
 >
 > Line numbers below are approximate.
 
-## Install Harbor from Rancher Partner Charts
+## 6.1. Install Harbor from Rancher Partner Charts
 
-### Create Namespace for Harbor Installation
+### 6.1.1. Create Namespace for Harbor Installation
 
 > Create namespace in the gui or with the following kubectl command
 ```
 kubectl create namespace harbor
 ```
-### From Rancher UI Navigate to Apps 🡪 Charts
+### 6.1.2. From Rancher UI Navigate to Apps 🡪 Charts
 
 Select Partner Charts From the Pulldown and Filter by Harbor as shown
 below
@@ -692,22 +692,22 @@ Click on Harbor Chart to initiate installation
 ![A screenshot of a computer Description automatically
 generated](./images/media/image12.png)
 
-### Click Install
+### 6.1.3. Click Install
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image13.png)
 
-### Enter namespace and deployment name for harbor and click Next
+### 6.1.4. Enter namespace and deployment name for harbor and click Next
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image14.png)
 
-## Modify Harber Values
+## 6.2. Modify Harber Values
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image15.png)
 
-### Customize helm values for installation.
+### 6.2.1. Customize helm values for installation.
 
 Lines ~128-134 (Optional)
 ```
@@ -738,7 +738,7 @@ the storageClass for a particular PVC is not set implicitly, the default storage
 
 Set appropriate sizes for PV's
 ```
-### Consider changing passwords
+### 6.2.2. Consider changing passwords
 
 Any default passwords for the DB/redis/etc should be changed at INSTALL
 
@@ -754,7 +754,7 @@ Line ~396:
 ```
 secretKey set to "not-a-secure-key"
 ```
-### Update Node Selectors
+### 6.2.3. Update Node Selectors
 
 > Note: Line numbers will shift as you add Node Selectors
 
@@ -794,7 +794,7 @@ Line 429
 ```
 Trivy 🡪 zone: infra
 ```
-### Other lines of interest
+### 6.2.4. Other lines of interest
 
 Lines ~236-263
 ```
@@ -804,20 +804,20 @@ MINIO instance.
 Defaults to \"filesystem\" which I will assume means to a PV that is
 setup for the instance.
 ```
-### See Appendix A for example values file
+### 6.2.5. See Appendix A for example values file
 
-## Perform Install
+## 6.3. Perform Install
 
-### Click Install once all edits have been made to the values
+### 6.3.1. Click Install once all edits have been made to the values
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image15.png)
 
-# Neuvector Installation
+# 7. Neuvector Installation
 
 [\*\*\*\* Needs Rewrite to reflect changes in deployment instructions \*\*\*\*]{.mark}
 
-## Create the neuvector project
+## 7.1. Create the neuvector project
 
 To create a new project, click the Create Project button on the top
 right corner.
@@ -832,7 +832,7 @@ Click the Create button on the bottom right corner.
 
 > The new project will be available in the bottom of the list displayed.
 
-## Install Nuevector from Cluster Tools
+## 7.2. Install Nuevector from Cluster Tools
 
 From the bottom left corner, click the Cluster Tools button.
 
@@ -884,11 +884,11 @@ Close the deployment tab.
 [\*\*\*\* Dead link to youtube video \*\*\*\*]{.mark}
 > Ref: <https://www.youtube.com/watch?v=jgkgEpel_98>
 
-# Rolling Restart Procedure
+# 8. Rolling Restart Procedure
 
-## Restart Rancher Management Cluster
+## 8.1. Restart Rancher Management Cluster
 
-### Control-Plane
+### 8.1.1. Control-Plane
 
 Restart one node at a time
 
@@ -900,9 +900,9 @@ command line:
 ```
 systemctl restart rke2-server
 ```
-## Restart Downstream Cluster
+## 8.2. Restart Downstream Cluster
 
-### Control-Plane
+### 8.2.1. Control-Plane
 
 Restart control-planes one node at a time
 
@@ -914,7 +914,7 @@ command line:
 ```
 systemctl restart rke2-server
 ```
-### Worker
+### 8.2.2. Worker
 
 Restart one node at a time
 
@@ -926,14 +926,14 @@ command line:
 ```
 systemctl restart rke2-agent
 ```
-# Shutdown and Startup
+# 9. Shutdown and Startup
 
 Perform the following tasks on all Downstream clusters first. Then
 perform the ControlPlane tasks for the Rancher Management Server nodes.
 
-## Shutdown
+## 9.1. Shutdown
 
-### Shutdown Worker Nodes 
+### 9.1.1. Shutdown Worker Nodes 
 
 ssh into the worker node
 
@@ -945,7 +945,7 @@ shutdown the system
 ```
 shutdown now
 ```
-### Shutdown ControlPlane Nodes One At A Time
+### 9.1.2. Shutdown ControlPlane Nodes One At A Time
 
 ssh into the controlplane node
 
@@ -957,9 +957,9 @@ shutdown the system
 ```
 shutdown now
 ```
-## Startup
+## 9.2. Startup
 
-### Startup ControlPlane Nodes One At A Time
+### 9.2.1. Startup ControlPlane Nodes One At A Time
 
 Power on the system
 
@@ -969,7 +969,7 @@ check status of rke2-server
 ```
 systemctl status rke2-server
 ```
-### Startup Worker Nodes
+### 9.2.2. Startup Worker Nodes
 
 Power on the system
 
@@ -979,16 +979,16 @@ check status of rke2-agent
 ```
 systemctl status rke2-agent
 ```
-# Rancher App Charts
+# 10. Rancher App Charts
 
-## Rancher provided Helm Charts
+## 10.1. Rancher provided Helm Charts
 
 Rancher provides a number of application charts as well as Partner charts for useful applications. Some applications are only visible on the Rancher local cluster, while other utilities such as Longhorn and Logging are available for installation on downstream clusters as well.
 
 ![A screenshot of a computer Description automatically
 generated](./images/media/image16.png)
 
-## Recommended Tools
+## 10.2. Recommended Tools
 
 1.  Longhorn (Opensource with paid support option)
 2.  Nuevector (Opensource with paid support option)
@@ -1002,7 +1002,7 @@ generated](./images/media/image16.png)
 > found by selecting any of the Apps from Apps 🡪 Charts on both the
 > local and downstream clusters.
 
-# APPENDIX A -- Harbor Values
+# 11. APPENDIX A -- Harbor Values
 ```
 caSecretName: ''
 cache:
@@ -1458,7 +1458,7 @@ updateStrategy:
   type: RollingUpdate
 ```
 
-# Appendix B - Logging Configs
+# 12. Appendix B - Logging Configs
 
 Secrets used for authentication need to be created manually.
 
@@ -1469,7 +1469,7 @@ or
 
 [Rancher Documentation - Flows and Cluster Flows](https://ranchermanager.docs.rancher.com/integrations-in-rancher/logging/custom-resource-configuration/flows-and-clusterflows)
 
-## ClusterFlow (Active -- Cluster scope)
+## 12.1. ClusterFlow (Active -- Cluster scope)
 ```
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterFlow
@@ -1480,7 +1480,7 @@ spec:
   globalOutputRefs:
     - opensearch-fluentd
 ```
-## ClusterOutput (Active -- Cluster Scope)
+## 12.2. ClusterOutput (Active -- Cluster Scope)
 ```
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: ClusterOutput
@@ -1503,7 +1503,7 @@ spec:
     user: admin
 ```
 
-## Flow (Example -- Namespace Scope)
+## 12.3. Flow (Example -- Namespace Scope)
 ```
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: Flow
@@ -1516,7 +1516,7 @@ spec:
   match:
     - select:
 ```
-## Output (Example -- Namespace Scope)
+## 12.4. Output (Example -- Namespace Scope)
 ```
 apiVersion: logging.banzaicloud.io/v1beta1
 kind: Output
@@ -1538,53 +1538,53 @@ spec:
     suppress_type_name: true
     user: admin
 ```
-# Appendix C -- Training and References
+# 13. Appendix C -- Training and References
 
-## Rancher Documentation
+## 13.1. Rancher Documentation
 
 **Description**: Official documentation for Rancher
 
 <https://ranchermanager.docs.rancher.com/>
 
-## RKE2 Documentation
+## 13.2. RKE2 Documentation
 
 **Description**: Official documentation for RKE2
 
 <https://docs.rke2.io/>
 
-## Harvester Documentation
+## 13.3. Harvester Documentation
 
 **Description**: Official documentation for Harvester
 
 <https://docs.harvesterhci.io>
 
-## Longhorn Documentation
+## 13.4. Longhorn Documentation
 
 **Description**: Official documentation for Longhorn
 
 <https://longhorn.io/docs>
 
-## Neuvector Documentation
+## 13.5. Neuvector Documentation
 
 **Description**: Official documentation for Neuvector
 
 <https://open-docs.neuvector.com/>
 
-## Suse Events
+## 13.6. Suse Events
 
 **Description**: Free Online Events, Training and Webinars from SuSE on
 Rancher, Neuvector, etc.
 
 <https://www.suse.com/events/>
 
-## Rancher Academy
+## 13.7. Rancher Academy
 
 **Description**: Collection of FREE Rancher, RKE2, and Kubernetes
 related training
 
 <https://www.rancher.academy/collections>
 
-## Neuvector Youtube
+## 13.8. Neuvector Youtube
 
 **Description**: Official Youtube for Neuvector and Neuvector 101 video
 that goes over basic
@@ -1595,7 +1595,7 @@ that goes over basic
 
 <https://www.youtube.com/watch?v=9ihaBr_QGzQ>
 
-## Rancher Github
+## 13.9. Rancher Github
 
 **Description**: Github repository for the latest releases of Rancher.
 Submit bug reports, research
@@ -1604,7 +1604,7 @@ upgrades, etc
 
 <https://github.com/rancher/rancher/>
 
-## RKE2 Github
+## 13.10. RKE2 Github
 
 **Description**: Github repository with the latest releases of RKE2.
 Cross reference with Rancher
@@ -1614,7 +1614,7 @@ reports, research upgrades, etc
 
 <https://github.com/rancher/rke2/>
 
-## Neuvector Github
+## 13.11. Neuvector Github
 
 **Description**: Git hub repository with the latest release of
 Neuvector. Submit bug reports,
@@ -1623,7 +1623,7 @@ research upgrades, etc
 
 <https://github.com/neuvector/neuvector>
 
-## Longhorn Github
+## 13.12. Longhorn Github
 
 **Description**: Github repository with the latest releases of Longhorn.
 Submit bug reports, research
@@ -1632,7 +1632,7 @@ upgrades, etc
 
 <https://github.com/longhorn/longhorn>
 
-## Harvester Github
+## 13.13. Harvester Github
 
 **Description**: Github repository with the latest release of Harvester.
 Submit bug reports,
@@ -1642,7 +1642,7 @@ research upgrades, etc
 <https://github.com/harvester/harvester>
 
 
-## CIS Self Assessment
+## 13.14. CIS Self Assessment
 
 **Description**: CIS Self Assessment ling for CIS 1.6 and CIS 1.23 from
 RKE2 Documentation
