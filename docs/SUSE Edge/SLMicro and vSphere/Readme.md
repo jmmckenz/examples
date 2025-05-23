@@ -4,7 +4,7 @@
   - [1.1. user-data example](#11-user-data-example)
     - [1.1.1. Replace SSCREGCODEXXX with your SCC Registration Code for the SLMicro product.](#111-replace-sscregcodexxx-with-your-scc-registration-code-for-the-slmicro-product)
     - [1.1.2. Hashed passwords generation:](#112-hashed-passwords-generation)
-  - [1.2. Convert to base64](#12-convert-to-base64)
+  - [1.2. Convert to base64\\](#12-convert-to-base64)
 - [2. Stage SLMicro VMDK for use in vSphere](#2-stage-slmicro-vmdk-for-use-in-vsphere)
   - [2.1. Download SLMicro VMDK](#21-download-slmicro-vmdk)
   - [2.2. Upload SLMicro VMDK to Datastore Staging Area](#22-upload-slmicro-vmdk-to-datastore-staging-area)
@@ -20,7 +20,7 @@
 
 # 1. Build cloud-init user-data
 ## 1.1. user-data example
-```
+```yaml
 #cloud-config
 package_update: true
 # disable root user
@@ -73,7 +73,7 @@ power_state:
   condition: True
   ```
   
-[user-data example](../code_examples/vsphere-cloud-init-userdata-example-final.md)
+[user-data example](../code_examples/vsphere-cloud-init-userdata-example-final.txt)
 
 
 ### 1.1.1. Replace SSCREGCODEXXX with your SCC Registration Code for the SLMicro product.
@@ -82,69 +82,22 @@ power_state:
 
 Generate random salt
 
-```
+```sh
 openssl rand -hex 16
 ```
 
 Generate hashed password using openssl
 
-```
+```sh
 openssl passwd -6 -salt 7d651f2c15538f8c2f5542c4c05d061b password
 ```
 
-## 1.2. Convert to base64
+## 1.2. Convert to base64\
+
+```sh
+cat user-data |base64
 ```
-server:/tmp # cat user-data |base64
-I2Nsb3VkLWNvbmZpZwpwYWNrYWdlX3VwZGF0ZTogdHJ1ZQojIGRpc2FibGUgcm9vdCB1c2VyCmRp
-c2FibGVfcm9vdDogdHJ1ZQpydW5jbWQ6CiMgVGVtcG9yYXJpbHkgcmVnaXN0ZXIgdGVtcGxhdGUg
-bWFjaGluZSB3aXRoIHNjYyB0byBlbmFibGUgenlwcGVyIHJlcG9zCiAgLSB0cmFuc2FjdGlvbmFs
-LXVwZGF0ZSAtLWNvbnRpbnVlIHJlZ2lzdGVyIC0tdXJsIGh0dHBzOi8vc2NjLnN1c2UuY29tIC1y
-IFNDQ1JFR0NPREVYWFgKIyBJbnN0YWxsIHN5c3RlbSBwYWNrYWdlcwogIC0gdHJhbnNhY3Rpb25h
-bC11cGRhdGUgLS1jb250aW51ZSAtLW5vbi1pbnRlcmFjdGl2ZSBwa2cgaW5zdGFsbCBqcSBuZXQt
-dG9vbHMgY2EtY2VydGlmaWNhdGVzIGNsb3VkLWluaXQgY2xvdWQtaW5pdC1jb25maWctc3VzZSBv
-cGVuc3NoLXNlcnZlciBvcGVuLXZtLXRvb2xzIG5mcy1jbGllbnQKIyBEaXNhYmxlIEF1dG8gdXBk
-YXRlIHRyYW5zYWN0aW9uLXVwZGF0ZS50aW1lcgogIC0gdHJhbnNhY3Rpb25hbC11cGRhdGUgLS1j
-b250aW51ZSBydW4gc3lzdGVtY3RsIC0tbm93IGRpc2FibGUgdHJhbnNhY3Rpb25hbC11cGRhdGUu
-dGltZXIKIyBTZXQgY2dyb3VwdjEgaGllYXJhY2h5IGVuYWJsZWQKICAtIHNlZCAtaSAncy9HUlVC
-X0NNRExJTkVfTElOVVg9IiIvR1JVQl9DTURMSU5FX0xJTlVYPSJzeXN0ZW1kLnVuaWZpZWRfY2dy
-b3VwX2hpZXJhcmNoeT0wIi8nIC9ldGMvZGVmYXVsdC9ncnViCiMgRGlzYWJsZSBzZWxpbnV4CiAg
-LSBzZWQgLWkgJ3Mvc2VsaW51eD0xL3NlbGludXg9MC8nIC9ldGMvZGVmYXVsdC9ncnViCiMgRW5h
-YmxlIGlhMzJfZW11bGF0aW9uCiAgLSBzZWQgLWkgJ3MvR1JVQl9DTURMSU5FX0xJTlVYX0RFRkFV
-TFQ9Ii9HUlVCX0NNRExJTkVfTElOVVhfREVGQVVMVD0iaWEzMl9lbXVsYXRpb249b24gLycgL2V0
-Yy9kZWZhdWx0L2dydWIKICAtIHNlZCAtaSAncy9HUlVCX1RJTUVPVVQ9LiovR1JVQl9USU1FT1VU
-PTAvJyAvZXRjL2RlZmF1bHQvZ3J1YgojIERlcmVnaXN0ZXIgdGVtcGxhdGUgbWFjaGluZSBmcm9t
-IHNjYwogIC0gdHJhbnNhY3Rpb25hbC11cGRhdGUgLS1jb250aW51ZSByZWdpc3RlciAtZCAtLXVy
-bCBodHRwczovL3NjYy5zdXNlLmNvbSAtciBTQ0NSRUdDT0RFWFhYCiMgUmVidWlsZCBib290bG9h
-ZGVyCiAgLSB0cmFuc2FjdGlvbmFsLXVwZGF0ZSAtLWNvbnRpbnVlIHJ1biB1cGRhdGUtYm9vdGxv
-YWRlcgojIFJlc2V0IGNsb3VkLWluaXQgZm9yIG5leHQgYnVpbGQKICAtIHRyYW5zYWN0aW9uYWwt
-dXBkYXRlIC0tY29udGludWUgcnVuIGNsb3VkLWluaXQgY2xlYW4gLS1sb2dzCgp1c2VyczoKIyBB
-ZGQgbm9uLXJvb3QgdXNlcgogIC0gbmFtZTogaGFydmVzdAogICAgaGFzaGVkX3Bhc3N3ZDogJDYk
-ZTRSdE5GMlEybkRxMUE0bCRvZUxKYXFlV1dJWW5QSEl4d2NSVFdyTzZzcU5Ja216M0Ryb0xtZnhZ
-U1FUYmVNcTg3VUFMNnVFUVBCMEJOS2ouRE5qVllkOVhhMXh3Y2M5a1ZiQk1JMQogICAgbG9ja19w
-YXNzd2Q6IGZhbHNlCiAgICBzaGVsbDogL2Jpbi9iYXNoCiMgQWRkIHN1ZG8gZW50cnkgZm9yIG5v
-bi1yb290IHVzZXIKICAgIHN1ZG86IEFMTD0oQUxMKSBOT1BBU1NXRDpBTEwKIyBBZGQgYXV0aG9y
-aXplZCBrZXlzCiAgICBzc2hfYXV0aG9yaXplZF9rZXlzOgogICAgICAtIHNzaC1yc2EKICAgICAg
-ICBBQUFBQjNOemFDMXljMkVBQUFBQkpRQUFBUUVBa1c3YmQyaVFCeDgvQTVwQWJOMjA3b1dnY3JW
-MGxYZ1VIVDJSWkkvci94YmI5L3lkTEtDVUJxbVloU0tnQkY4MEtKb1d2RTNjUGVVRGZUaHFvK3FM
-bGl2Yzl2clRZWkRNQis3d1AvWEd0QTk5anFGUXNYRHlDMmdiOEgveUtJUkt1OWVTclk5QkhXOWVs
-NzBicGR4UElEMFlieFdZR0pveGliNURPNG1nM1d0R0l2OU1lVzRidmdvTWoxWmhLTUZycTJ0WUd2
-M1AxTXB1TmdrbHdzR21VVytySU9WamhDRVV6M0tTcjIrNEVmY3VzT1Y2RkQzMlNIa0lnZGVOeTND
-NU1UMU9lNmhrMGJzVXgvZlo5S1M5WUhYNmIzTHVJamt3MUZ1WkJDQnlNZ01XYTRqTzlRSy95NzZZ
-TU9GSE9RdHhoT3N6U3VFa0h0bDZpamVlalpZUHRRPT0KICAgICAgLSBzc2gtcnNhCiAgICAgICAg
-QUFBQUIzTnphQzF5YzJFQUFBQURBUUFCQUFBQmdRRFp4QXNZTkpTMjY2alBwV0VzSnd5aWJmWkpO
-NkZQTk1ITXhXOVBscnVPWEpMcnZkWGMxd2dvMjNkNGMxQmJhR2lSb1hXM3h3ZDV6Snd0cjRkVkIr
-UUd0VzFyQ09ZdEhMR3R2ZkltNUw1WTBTVnJHT3REU1ZJcHV3WXRNbnQ0WUJmWmZCZUR5SmZudXZa
-NUU4Q01OSTFDZWt6ZlQ3RmdabkYxVFFpZ09LZ084TVVVUzNIVE5kM29seThEN3czUVpMY2pIdWZo
-Rkdvam5aakVYZnVUOHRYcU9haUNtbEF6a2RBbUdjendUZlhqWjNRM0tDRUgyMEtUSzMxQXhVUCs4
-MHA3NWkyRkUzUUVNZkhpalhpdVViZEVQVE44TDJYU1JlOG5YN2MzTlpPNWhXVit0OXdMeWZaZ2M1
-cUhDNUNTOWZOMXZHZkxUcGpRb2FSb3hLQ1M5ZEZKS1ZEZzRodUhjT3oxZ28wWUFReTZFZitjN2dr
-UXYxWlY3VkFUVFU5a1ZRV095NytnenRYbndvRlhTZzJxbW4zSmlKUFZNRGlmdDJ5b3p6cEYrTzRH
-cEM5ZGdwbEJjdWdaVDVCZzNUTlBjZkVCTEdjTmdJQUMvYlltYTF6NitURGVlMFJEa1dMZzhKc0N3
-NTU0UUNESS9CN0lzMURaL0o0Z1RrbU8xTU53M21NPQoKIyBzZXQgZGVzaXJlZCBwb3dlcl9zdGF0
-ZSBhZnRlciBjbG91ZC1pbml0IGZpbmlzaGVzCnBvd2VyX3N0YXRlOgogIG1vZGU6IHBvd2Vyb2Zm
-CiAgbWVzc2FnZTogUG93ZXJpbmcgT2ZmIGZvciBUZW1wbGF0aW5nCiAgdGltZW91dDogMTAKICBj
-b25kaXRpb246IFRydWUK
-```
+
 [user-data base64 example](../code_examples/vsphere-cloud-init-userdata-example-final-base64.txt)
 
 
@@ -194,6 +147,7 @@ Click "Move To" to copy VMDK to Imported VMDK location and then click "OK"
 Note:
 The downloaded VMDK is sparse and may have some difficulty as is with Paravirtual SCSI controller if it is not expanded.  Moving the VMDK performs a copy of the source with the full volume size defined in the VMDK, and prevents the ParaVirtual SCSI controller issues when combined with choosing a compatible VM version later on. 
 ```
+
 Wait for the image to complete copying.  
 
 ## 3.2. Create a VM from SLMicro VMDK
@@ -225,6 +179,7 @@ Select the target Datastore and click "Next"
 ![Select Storage](../images/Select_storage_screen.png)
 
 Select Compatibility with "ESX 6.7 and later" and click "Next"
+
 ```
 Note:
 We choose "ESX 6.7 and later" to insure compatibility with the generated vmdk.  Newer versions of the virtual machine compatibility can interfere with correctly assigning disks to the Paravirtual SCSI controller when we try to boot the VM for the first time.
