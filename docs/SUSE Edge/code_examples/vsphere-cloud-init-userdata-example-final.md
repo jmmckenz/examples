@@ -17,6 +17,8 @@ runcmd:
 # Enable ia32_emulation
   - sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="ia32_emulation=on /' /etc/default/grub
   - sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
+# Potential Work Around for fsck issue
+  - transactional-update --continue run dracut --regenerate-all -f -N
 # Deregister template machine from scc
   - transactional-update --continue register -d --url https://scc.suse.com -r SCCREGCODEXXX
 # Rebuild bootloader
