@@ -1,5 +1,8 @@
 # Krew
 ## Krew Installation Instructions
+### Pre-requisites
+System must have git installed
+
 [Install Krew](https://krew.sigs.k8s.io/docs/user-guide/setup/install/)
 
 ## Update Krew
