@@ -1,7 +1,11 @@
-# Easy button psuedo-code (linux only):
+# Easy button psuedo-code for workload migration RKE to RKE2 Replatform or other use cases (linux only):
 # Use case: No existing CI/CD or plan to integrate CI/CD on new cluster later.
 
-## Setup Environment Script
+## Setup Environment Script/Function
+### Args
+```
+--install, -I           # If written as function
+```
 ### Determine OS and assign package manager (zypper/yum/apt)
 ### Install git
 ### Install kubectl
