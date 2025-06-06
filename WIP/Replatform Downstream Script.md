@@ -106,6 +106,7 @@ kubectl cs destination-cluster:
 ```
 
 ### Apply manifests from directory (./ by default or from directory specified by --in argument)
+#### Minimal error checking, confirm if resource already exists, etc.
 
 
 
