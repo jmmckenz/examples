@@ -101,7 +101,7 @@ storageclasses
 kubectl cs destination-cluster:
 ```
 
-### Apply manifests from directory (./ by default or from --in)
+### Apply manifests from directory (./ by default or from directory specified by --in argument)
 
 
 
