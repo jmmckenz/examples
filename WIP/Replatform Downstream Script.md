@@ -24,6 +24,7 @@ grep
 konfig
 cs
 eksporter
+pv-migrate
 ```
 
 ### Populate kubeconfigs for source and destination clusters

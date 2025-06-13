@@ -5,6 +5,27 @@ Velero Install and Setup
 ## Setup Using NFS Storage Class 
 
 # Installing the NFS CSI	
+## App Store Install
+Add Repo
+
+*nfs-csi-driver-repo.yaml*
+```yaml
+apiVersion: catalog.cattle.io/v1
+kind: ClusterRepo
+metadata:
+  name: nfs-csi-driver
+spec:
+  clientSecret: null
+  url: >-
+    https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+```
+
+```shell
+kubectl apply -f nfs-csi-driver-repo.yaml
+```
+
+Install through UI and helm values found below.
+
 ## Helm install:
 ### nfs-csi-values.yaml:
 ```
