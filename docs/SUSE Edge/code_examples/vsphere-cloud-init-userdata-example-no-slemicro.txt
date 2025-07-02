@@ -1,0 +1,33 @@
+#cloud-config
+package_update: true
+# disable root user
+disable_root: true
+runcmd:
+packages:
+  - net-tools 
+  - ca-certificates
+  - cloud-init-config-suse 
+  - open-vm-tools 
+  - nfs-client
+  - cloud-init
+  - jq
+  - open-iscsi
+runcmd:
+  - ln -s /var/lib/rancher/rke2/bin/kubectl /usr/local/bin/
+  - mkdir /root/.kube
+  - ln -s /etc/rancher/rke2/rke2.yaml /root/.kube/config
+
+users:
+# Add non-root user
+  - name: myuseer
+    hashed_passwd: $6$e4RtNF2Q2nDq1A4l$oeLJaqeWWIYnPHIxwcRTWrO6sqNIkmz3DroLmfxYSQTbeMq87UAL6uEQPB0BNKj.DNjVYd9Xa1xwcc9kVbBMI1
+    lock_passwd: false
+    shell: /bin/bash
+# Add sudo entry for non-root user
+    sudo: ALL=(ALL) NOPASSWD:ALL
+# Add authorized keys
+    ssh_authorized_keys:
+      - ssh-rsa
+        AAAAB3NzaC1yc2EAAAABJQdddAAAQEAkW7bd2iQBx8/A5pAbN207oWgcrV0lXgUHT2RZI/r/xbb9/ydLKCUBqmYhSKgBF80KJoWvE3cPeUDfThqo+qLlivc9vrTYZDMB+7wP/XGtA99jqFQsXDyC2gb8H/yKIRKu9eSrY9BHW9el70bpdxPID0YbxWYGJoxib5DO4mg3WtGIv9MeW4bvgoMj1ZhKMFrq2tYGv3P1MpuNgklwsGmUW+rIOVjhCEUz3KSr2+4EfcusOV6FD32SHkIgdeNy3C5MT1Oe6hk0bsUx/fZ9KS9YHX6b3LuIjkw1FuZBCByMgMWa4jO9QK/y76YMOFHOQtxhOszSuEkHtl6ijeejZYPtQ==
+      - ssh-rsa
+        AAAAB3NzaC1yc2EAAAADAQdddABAAABgQDZxAsYNJS266jPpWEsJwyibfZJN6FPNMHMxW9PlruOXJLrvdXc1wgo23d4c1BbaGiRoXW3xwd5zJwtr4dVB+QGtW1rCOYtHLGtvfIm5L5Y0SVrGOtDSVIpuwYtMnt4YBfZfBeDyJfnuvZ5E8CMNI1CekzfT7FgZnF1TQigOKgO8MUUS3HTNd3oly8D7w3QZLcjHufhFGojnZjEXfuT8tXqOaiCmlAzkdAmGczwTfXjZ3Q3KCEH20KTK31AxUP+80p75i2FE3QEMfHijXiuUbdEPTN8L2XSRe8nX7c3NZO5hWV+t9wLyfZgc5qHC5CS9fN1vGfLTpjQoaRoxKCS9dFJKVDg4huHcOz1go0YAQy6Ef+c7gkQv1ZV7VATTU9kVQWOy7+gztXnwoFXSg2qmn3JiJPVMDift2yozzpF+O4GpC9dgplBcugZT5Bg3TNPcfEBLGcNgIAC/bYma1z6+TDee0RDkWLg8JsCw554QCDI/B7Is1DZ/J4gTkmO1MNw3mM=
