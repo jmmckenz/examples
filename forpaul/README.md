@@ -60,6 +60,20 @@ done
 ```
 
 # Manually review ingresses for host definitions (czardev vs czartest, etc) and review secrets to make sure they are specific to the current tier.  Will likely need to recreate the secrets (specifically tls secrets) for each individual environment.
+## Update Ingresses and secret names
+
+```shell
+for manifest in `find ~/test -name "*.yaml"`
+do
+  sed -i '' -e 's/czardev/czartest/g' $manifest
+done
+
+for manifest in `find ~/prod -name "*.yaml"`
+do
+  sed -i '' -e 's/czardev/czarnowski/g' $manifest
+done
+```
+
 
 # Manually check replicas: 0 for deployments
 
