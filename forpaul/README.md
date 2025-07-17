@@ -1,13 +1,13 @@
 # Setup Environment
 ## Install Krew
 [Install Krew](https://krew.sigs.k8s.io/docs/user-guide/setup/install/)
-Populate all kubeconfigs to ~/.kube
 
 Install the resource-backup krew plugin
 ```shell
 kubectl krew install resource-backup
 ```
 
+Populate all kubeconfigs to ~/.kube
 example:
 
 ```
