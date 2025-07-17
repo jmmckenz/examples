@@ -50,12 +50,12 @@ cp -Rp dev/* prod/
 ```shell
 for manifest in `find ~/test -name "*.yaml"`
 do
-  sed -i 's/value: dev/value: test/g' $manifest
+  sed -i 's/value: dev/value: test/' $manifest
 done
 
 for manifest in `find ~/prod -name "*.yaml"`
 do
-  sed -i 's/value: dev/value: prod/g' $manifest
+  sed -i 's/value: dev/value: prod/' $manifest
 done
 ```
 
