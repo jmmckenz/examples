@@ -82,3 +82,5 @@ do
   kubectl apply -f $each
 done
 ```
+
+# Copy all the manifests into some form of source control, not that we have a source of truth for initial deployment for each environment.
