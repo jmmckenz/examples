@@ -48,12 +48,12 @@ cp -Rp dev/* prod/
 
 # Replace springboot env value in all manifests
 ```shell
-for manifest in `find ./test -name "*.yaml"`
+for manifest in `find ~/test -name "*.yaml"`
 do
   sed -i 's/value: dev/value: test/g' $manifest
 done
 
-for manifest in `find ./prod -name "*.yaml"`
+for manifest in `find ~/prod -name "*.yaml"`
 do
   sed -i 's/value: dev/value: prod/g' $manifest
 done
