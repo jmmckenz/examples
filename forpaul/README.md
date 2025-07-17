@@ -54,6 +54,7 @@ do
 done
 
 for manifest in `find ./prod -name "*.yaml"`
+do
   sed -i 's/value: dev/value: prod/g' $manifest
 done
 ```
