@@ -19,12 +19,12 @@ example:
 # Get initial manifests from source
 Update namespace list as needed. 
 ```shell
-KUBECONFIG=~/.kube/devcluster-config
+KUBECONFIG=~/.kube/development.yaml
 cd ~
 mkdir dev
 cd dev
 
-for namespace in "apps intranet cloud"
+for namespace in "apps intranet cloud integrations microservices"
 do
   mkdir $namespace
   cd $namespace
@@ -65,7 +65,7 @@ done
 # Deployment
 ## TEST
 ```shell
-KUBECONFIG=~/.kube/testcluster-config
+KUBECONFIG=~/.kube/testing.yaml
 
 for each in `find ./test -name "*.yaml"`
 do
@@ -75,8 +75,7 @@ done
 
 ## PROD
 ```shell
-KUBECONFIG=~/.kube/prodcluster-config
-
+KUBECONFIG=~/.kube/production.yaml
 for each in `find ./prod -name "*.yaml"`
 do
   kubectl apply -f $each
