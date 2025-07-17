@@ -82,6 +82,11 @@ done
 ```shell
 export KUBECONFIG=~/.kube/testing.yaml
 
+for namespace in apps intranet cloud integrations microservices
+do
+  kubectl create namespace $namespace
+done
+
 for each in `find ./test -name "*.yaml"`
 do
   kubectl apply -f $each
@@ -91,10 +96,19 @@ done
 ## PROD
 ```shell
 export KUBECONFIG=~/.kube/production.yaml
+
+for namespace in apps intranet cloud integrations microservices
+do
+  kubectl create namespace $namespace
+done
+
 for each in `find ./prod -name "*.yaml"`
 do
   kubectl apply -f $each
 done
 ```
+
+
+
 
 # Copy all the manifests into some form of source control, not that we have a source of truth for initial deployment for each environment.
