@@ -1,0 +1,133 @@
+#!ipxe
+ifopen net0
+dhcp net0 ||
+
+set install_server 192.168.1.1
+set install_base http://192.168.1.1/pxe
+set install_base2 http://10.0.0.94/pxeboot
+
+#set hrv_ver v1.1.2-rc3
+#set hrv_ver v1.2.1
+set hrv_ver v1.1.2
+set hrv_arch amd64
+set hrv_base ${install_base}/oses/Harvester
+set hrv_base2 ${install_base2}/oses/Harvester
+
+set opensuse http://download.opensuse.org/distribution
+set opensuse_local ${install_base}/oses/opensuse
+
+menu iPXE Install Server - Choose an option
+#item exit                              Boot from locl disk
+item localboot                         Boot from local disk
+item --gap -- -------------------------------------------------------------------
+item --gap -- ----------------------------     Harvester Installation Options ---
+item          harvester_install_manual         Harvester Installation (manual)
+item          hrvester_install_auto_create     Harvester Auto Install (create)
+item          hrvester_install_auto_join       Harvester Auto Install (join)
+item --gap -- ----------------------------     openSUSE Installation Options  ---
+item          tumbleweed                       openSUSE Tumbleweed Rolling Release
+item          openSUSEstable                   openSUSE stable
+item          openSUSELeap42.3                 openSUSE Leap 42.3
+item          openSUSELeap15.5-full            openSUSE Leap 15.5 Full
+item          openSUSELeap15.5-net             openSUSE Leap 15.5 Net
+item          openSUSELeap15.4                 openSUSE Leap 15.4
+item          openSUSELeap15.3                 openSUSE Leap 15.3
+item          openSUSELeap15.2                 openSUSE Leap 15.2
+item          openSUSELeap15.1                 openSUSE Leap 15.1
+item          openSUSELeap15.0                 openSUSE Leap 15.0
+item          openSUSEjump                     openSUSE jump
+item --gap -- -------------------------------------------------------------------
+
+#item lep_install_autoyast             openSUSE Leap ${leap_ver} Install (autoyast)
+
+
+choose --default localboot --timeout 50000 target && goto ${target}
+
+:localboot
+snboot --no-describe --drive 0x80
+
+:harvester_install_manual
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:hrvester_install_auto_create
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base}/configs/mcharvester01.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1 
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:hrvester_install_auto_join
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base}/configs/mcharvester02.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1 
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:realboot
+kernel ${base-url}/boot/${susearch}/loader/linux initrd=initrd load_ramdisk=1
+initrd ${base-url}/boot/${susearch}/loader/initrd
+imgargs linux install=${base-url} hostip=${net0/ip} netmask=${net0/netmask} gateway=${net0/gateway} nameserver=${dns}
+boot
+
+:network-boot
+sanboot --drive 0x81 ${base-url}/${base-iso}
+boot
+
+:openSUSEjump
+set susearch x86_64
+set base-url ${opensuse}/jump/repo/oss
+goto realboot
+
+:openSUSELeap42.3
+set susearch x86_64
+set base-url ${opensuse}/leap/42.3/repo/oss
+goto realboot
+
+:openSUSELeap15.5-full
+set susearch x86_64
+set base-url ${opensuse_local}/leap/15.5/isos
+set base-iso openSUSE-Leap-15.5-DVD-x86_64-Build491.1-Media.iso
+goto network-boot
+
+:openSUSELeap15.5-net
+set susearch x86_64
+set base-url ${opensuse_local}/leap/15.5/isos
+set base-iso openSUSE-Leap-15.5-NET-x86_64-Build491.1-Media.iso
+goto network-boot
+
+:openSUSELeap15.4
+set susearch x86_64
+set base-url ${opensuse}/leap/15.4/repo/oss
+goto realboot
+
+:openSUSELeap15.3
+set susearch x86_64
+set base-url ${opensuse}/leap/15.3/repo/oss
+goto realboot
+
+:openSUSELeap15.2
+set susearch x86_64
+set base-url ${opensuse}/leap/15.2/repo/oss
+goto realboot
+
+:openSUSELeap15.1
+set susearch x86_64
+set base-url ${opensuse}/leap/15.1/repo/oss
+goto realboot
+
+:openSUSELeap15.0
+set susearch x86_64
+set base-url ${opensuse}/leap/15.0/repo/oss
+goto realboot
+
+:openSUSEstable
+set susearch x86_64
+set base-url ${opensuse}/openSUSE-stable/repo/oss
+goto realboot
+
+:tumbleweed
+set susearch x86_64
+set base-url ${opensuse}/../tumbleweed/repo/oss
+goto realboot
+
+
+
+

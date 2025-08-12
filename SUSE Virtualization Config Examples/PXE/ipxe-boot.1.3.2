@@ -1,0 +1,64 @@
+#!ipxe
+ifopen net0
+dhcp net0 ||
+
+set install_server 192.168.1.1
+set install_base http://192.168.1.1/pxe
+set install_base2 http://10.0.0.94/pxeboot
+
+#set hrv_ver v1.1.2-rc3
+#set hrv_ver v1.2.1
+set hrv_ver v1.3.2
+set hrv_arch amd64
+set hrv_base ${install_base}/oses/Harvester
+set hrv_base2 ${install_base2}/oses/Harvester
+
+menu iPXE Install Server - Choose an option
+#item exit                              Boot from locl disk
+item localboot                         Boot from local disk
+item --gap -- -------------------------------------------------------------------
+item --gap -- ----------------------------     Harvester Installation Options ---
+item          harvester_install_manual         Harvester Installation (manual)
+item          hrvester_install_auto_create     Harvester Auto Install (create)
+item          hrvester_install_auto_join       Harvester Auto Install (join)
+item          dell_hrvester_install_auto_create     Dell Harvester Auto Install (create)
+item          dell_hrvester_install_auto_join_node2      Dell Harvester Auto Install (join node 2)
+item          dell_hrvester_install_auto_join_node3      Dell Harvester Auto Install (join node 3)
+item --gap -- -------------------------------------------------------------------
+
+#item lep_install_autoyast             openSUSE Leap ${leap_ver} Install (autoyast)
+
+choose --default localboot --timeout 50000 target && goto ${target}
+
+:localboot
+snboot --no-describe --drive 0x80
+
+:harvester_install_manual
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=eno3:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:hrvester_install_auto_create
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base}/configs/mcharvester01.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1 
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:hrvester_install_auto_join
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base}/configs/mcharvester02.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1 
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:dell_hrvester_install_auto_create
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=eno3:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base2}/configs/harvester01.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:dell_hrvester_install_auto_join_node2
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=eno3:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base2}/configs/harvester02.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:dell_hrvester_install_auto_join_node3
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=eno3:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base2}/configs/harvester03.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot

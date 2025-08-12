@@ -1,0 +1,69 @@
+#!ipxe
+ifopen net0
+dhcp net0 ||
+
+set install_server 192.168.1.1
+set install_base http://192.168.1.1/pxe
+set install_base2 http://10.0.0.94/pxeboot
+
+#set hrv_ver v1.1.2-rc3
+#set hrv_ver v1.2.1
+set hrv_ver v1.1.2
+set hrv_arch amd64
+set hrv_base ${install_base}/oses/Harvester
+set hrv_base2 ${install_base2}/oses/Harvester
+
+set opensuse http://download.opensuse.org/distribution
+set opensuse_local ${install_base}/oses/opensuse
+
+menu iPXE Install Server - Choose an option
+#item exit                              Boot from locl disk
+item localboot                         Boot from local disk
+item --gap -- -------------------------------------------------------------------
+item --gap -- ----------------------------     Harvester Installation Options ---
+item          harvester_install_manual         Harvester Installation (manual)
+item          hrvester_install_auto_create     Harvester Auto Install (create)
+item          hrvester_install_auto_join       Harvester Auto Install (join)
+item --gap -- ----------------------------     openSUSE Installation Options  ---
+item          openSUSELeap15.5                 openSUSE Leap 15.5 Network
+item --gap -- -------------------------------------------------------------------
+
+#item lep_install_autoyast             openSUSE Leap ${leap_ver} Install (autoyast)
+
+
+choose --default localboot --timeout 50000 target && goto ${target}
+
+:localboot
+snboot --no-describe --drive 0x80
+
+:harvester_install_manual
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:hrvester_install_auto_create
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base}/configs/mcharvester01.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1 
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:hrvester_install_auto_join
+kernel ${hrv_base}/harvester-${hrv_ver}-vmlinuz-${hrv_arch} ip=enp2s0f1:dhcp net.ifnames=1 rd.cos.disable rd.noverifyssl console=tty1 root=live:${hrv_base}/harvester-${hrv_ver}-rootfs-${hrv_arch}.squashfs harvester.install.iso_url=${hrv_base}/harvester-${hrv_ver}-${hrv_arch}.iso harvester.install.automatic=true harvester.install.config_url=${hrv_base}/configs/mcharvester02.yaml initrd=harvester-${hrv_ver}-initrd-${hrv_arch} load_ramdisk=1 
+initrd ${hrv_base}/harvester-${hrv_ver}-initrd-${hrv_arch}
+boot
+
+:realboot
+kernel ${base-url}/boot/${susearch}/loader/linux initrd=initrd load_ramdisk=1
+initrd ${base-url}/boot/${susearch}/loader/initrd
+imgargs linux install=${base-url} hostip=${net0/ip} netmask=${net0/netmask} gateway=${net0/gateway} nameserver=${dns}
+boot
+
+:network-boot
+sanboot ${base-url}/${base-iso}
+boot
+
+:openSUSELeap15.5-net
+set susearch x86_64
+set base-url ${opensuse_local}/leap/15.5/isos
+set base-iso openSUSE-Leap-15.5-NET-x86_64-Build491.1-Media.iso
+goto network-boot
+

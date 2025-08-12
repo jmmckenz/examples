@@ -1,0 +1,145 @@
+#!ipxe
+ifopen net0
+dhcp net0 ||
+set menu-timeout 5000
+set opensuse http://download.opensuse.org/distribution
+
+:selection
+menu Boot Selection
+item --gap -- -------------            Boot Selection ------------
+item --key c  advanced                 Advanced Boot Settings
+item          tumbleweed               openSUSE Tumbleweed Rolling Release
+item          tumbleweed_32bit         openSUSE Tumbleweed Rolling Release 32bit
+item          openSUSEstable           openSUSE stable
+item          openSUSEstable_32bit     openSUSE stable 32bit
+item          openSUSELeap42.3         openSUSE Leap 42.3
+item          openSUSELeap15.2         openSUSE Leap 15.2
+item          openSUSELeap15.1         openSUSE Leap 15.1
+item          openSUSELeap15.0         openSUSE Leap 15.0
+item          openSUSEjump             openSUSE jump
+item          openSUSEjump_32bit       openSUSE jump 32bit
+item --gap -- ------------- Boot Selection End ------------
+choose --timeout ${menu-timeout} --default openSUSEstable selected || goto selection
+set menu-timeout 0
+goto ${selected}
+
+:advanced
+set menu-timeout 5000
+menu Advanced Boot Settings
+item --gap -- -------------            Advanced Boot Settings Menu ------------
+item --key c  settings                 Configure network settings
+item          bootdisk                 Boot from local disk
+item          shell                    iPXE shell
+item          factory                  openSUSE Factory
+item          factory_32bit            openSUSE Factory 32bit
+item          factorysnapshot          openSUSE Factory snapshot
+item          factorysnapshot_32bit    openSUSE Factory snapshot 32bit
+item          factorytested            openSUSE Factory Tested
+item          factorytested_32bit      openSUSE Factory Tested 32bit
+item          back                     Back to main menu (or press ESC)
+item --gap -- ------------- Advanced Boot settings End ------------
+choose --timeout ${menu-timeout} --default shell selected || goto selection
+set menu-timeout 0
+goto ${selected}
+
+:back
+goto selection
+
+:settings
+config
+goto advanced
+
+:bootdisk
+sanboot --no-describe --drive 0x80
+
+:shell
+echo type exit to return back to menu
+shell
+goto advanced
+
+:realboot
+kernel ${base-url}/boot/${susearch}/loader/linux
+initrd ${base-url}/boot/${susearch}/loader/initrd
+imgargs linux install=${base-url} hostip=${net0/ip} netmask=${net0/netmask} gateway=${net0/gateway} nameserver=${dns}
+boot
+
+:openSUSEjump_32bit
+set susearch i386
+set base-url ${opensuse}/jump/repo/oss
+goto realboot
+
+:openSUSEjump
+set susearch x86_64
+set base-url ${opensuse}/jump/repo/oss
+goto realboot
+
+:openSUSELeap42.3
+set susearch x86_64
+set base-url ${opensuse}/leap/42.3/repo/oss
+goto realboot
+
+:openSUSELeap15.2
+set susearch x86_64
+set base-url ${opensuse}/leap/15.2/repo/oss
+goto realboot
+
+:openSUSELeap15.1
+set susearch x86_64
+set base-url ${opensuse}/leap/15.1/repo/oss
+goto realboot
+
+:openSUSELeap15.0
+set susearch x86_64
+set base-url ${opensuse}/leap/15.0/repo/oss
+goto realboot
+
+
+:openSUSEstable
+set susearch x86_64
+set base-url ${opensuse}/openSUSE-stable/repo/oss
+goto realboot
+
+:openSUSEstable_32bit
+set susearch i386
+set base-url ${opensuse}/openSUSE-stable/repo/oss
+goto realboot
+
+:tumbleweed
+set susearch x86_64
+set base-url ${opensuse}/../tumbleweed/repo/oss
+goto realboot
+
+:tumbleweed_32bit
+set susearch i386
+set base-url ${opensuse}/../tumbleweed/repo/oss
+goto realboot
+
+:factory
+set susearch x86_64
+set base-url ${opensuse}/../factory/repo/oss
+goto realboot
+
+:factory_32bit
+set susearch i386
+set base-url ${opensuse}/../factory/repo/oss
+goto realboot
+
+:factorytested
+set susearch x86_64
+set base-url ${opensuse}/../factory-tested/repo/oss
+goto realboot
+
+:factorytested_32bit
+set susearch i386
+set base-url ${opensuse}/../factory-tested/repo/oss
+goto realboot
+
+:factorysnapshot
+set susearch x86_64
+set base-url ${opensuse}/../factory-snapshot/repo/oss
+goto realboot
+
+:factorysnapshot_32bit
+set susearch i386
+set base-url ${opensuse}/../factory-snapshot/repo/oss
+goto realboot
