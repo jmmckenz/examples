@@ -1,7 +1,6 @@
 - [1. Install Observability](#1-install-observability)
   - [1.1. Configure helm repo](#11-configure-helm-repo)
-  - [1.2. setup](#12-setup)
-    - [1.2.1. replace sizing profile with appropriate](#121-replace-sizing-profile-with-appropriate)
+  - [1.2. Setup values files](#12-setup-values-files)
   - [1.3. Create $VALUES\_DIR/suse-observability-values/templates/ingress\_values.yaml](#13-create-values_dirsuse-observability-valuestemplatesingress_valuesyaml)
   - [1.4. For smaller installations, edit sizing\_values.yaml](#14-for-smaller-installations-edit-sizing_valuesyaml)
     - [1.4.1. modify the line below from 10 to 50 (optional)](#141-modify-the-line-below-from-10-to-50-optional)
@@ -12,10 +11,11 @@
   - [1.8. Get initial admin password from baseConfig\_values.yaml comments](#18-get-initial-admin-password-from-baseconfig_valuesyaml-comments)
 - [2. Initial setup of Observability](#2-initial-setup-of-observability)
   - [2.1. Get Api key and command line from observability CLI page to install STS CLI](#21-get-api-key-and-command-line-from-observability-cli-page-to-install-sts-cli)
-  - [2.2. Install STS CLI (cut and paste from screenshot](#22-install-sts-cli-cut-and-paste-from-screenshot)
+  - [2.2. Install STS CLI (cut and paste from screenshot)](#22-install-sts-cli-cut-and-paste-from-screenshot)
   - [2.3. Retrieve service token](#23-retrieve-service-token)
   - [2.4. Setup StackPack for each cluster](#24-setup-stackpack-for-each-cluster)
     - [2.4.1. Generate a new token](#241-generate-a-new-token)
+      - [Token needs to be generated at least once.  It can be reused for multiple clusters, or each cluster can have a unique token.](#token-needs-to-be-generated-at-least-once--it-can-be-reused-for-multiple-clusters-or-each-cluster-can-have-a-unique-token)
 - [3. Install Observability Agent on clusters](#3-install-observability-agent-on-clusters)
   - [3.1. Setup Repository](#31-setup-repository)
   - [3.2. Install Agent](#32-install-agent)
@@ -28,8 +28,8 @@ helm repo add suse-observability https://charts.rancher.com/server-charts/prime/
 helm repo update
 ```
 
-## 1.2. setup 
-### 1.2.1. replace sizing profile with appropriate 
+## 1.2. Setup values files 
+Replace sizing profile with appropriate value for your environment
 
 ```
 export VALUES_DIR=.
@@ -95,9 +95,11 @@ helm upgrade --install \
 
 ## 1.8. Get initial admin password from baseConfig_values.yaml comments
 
+example:
 ```
 # Your SUSE Observability admin password is: pv48aEgN2cmbMfPf
 ```
+
 
 # 2. Initial setup of Observability
 
@@ -105,7 +107,7 @@ helm upgrade --install \
 
 ![Insert Screenshot](./images/media/sts_cli.png)
 
-## 2.2. Install STS CLI (cut and paste from screenshot
+## 2.2. Install STS CLI (cut and paste from screenshot)
 
 example:
 
@@ -130,10 +132,11 @@ example output:
 ![Insert Screenshot](./images/media/stackpack1.png)
 ![Insert Screenshot](./images/media/stackpack2.png)
 
-### 2.4.1. Generate a new token
+### 2.4.1. Generate a new token 
+#### Token needs to be generated at least once.  It can be reused for multiple clusters, or each cluster can have a unique token.
 
 ![Insert Screenshot](./images/media/stackpack3.png)
-
+![Insert Screenshot](./images/media/stackpack4.png)
 
 
 # 3. Install Observability Agent on clusters
