@@ -4,7 +4,7 @@
   - [1.3. Create $VALUES\_DIR/suse-observability-values/templates/ingress\_values.yaml](#13-create-values_dirsuse-observability-valuestemplatesingress_valuesyaml)
   - [1.4. For smaller installations, edit sizing\_values.yaml](#14-for-smaller-installations-edit-sizing_valuesyaml)
     - [1.4.1. modify the line below from 10 to 50 (optional)](#141-modify-the-line-below-from-10-to-50-optional)
-    - [1.4.2. Change all cpu requests to 50m](#142-change-all-cpu-requests-to-50m)
+    - [1.4.2. Change all cpu requests to 50m to allow for operation on 4vcpu/16GB RAM 3-node cluster](#142-change-all-cpu-requests-to-50m-to-allow-for-operation-on-4vcpu16gb-ram-3-node-cluster)
   - [1.5. Create Namespace](#15-create-namespace)
   - [1.6. Create tls-obsv secretName](#16-create-tls-obsv-secretname)
   - [1.7. Install suse-observability](#17-install-suse-observability)
@@ -66,7 +66,7 @@ ingress:
 CONFIG_FORCE_stackstate_agents_agentLimit: "50"
 ```
 
-### 1.4.2. Change all cpu requests to 50m
+### 1.4.2. Change all cpu requests to 50m to allow for operation on 4vcpu/16GB RAM 3-node cluster 
 
 
 ## 1.5. Create Namespace
