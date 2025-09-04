@@ -41,6 +41,7 @@
 * kubeconfig files for both the Source and Destination clusters
 
 * Perform PV/PVC Migrations **BEFORE** installing app yamls to insure the apps can mount the populated PV's
+* This guide assumes the inability to use lbsvc strategy in pv-migrate
 
 # 2. Install NFS CSI Driver and Create a StorageClass
 
