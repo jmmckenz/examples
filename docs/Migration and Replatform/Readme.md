@@ -1,12 +1,12 @@
 - [1. Prerequisites](#1-prerequisites)
 - [2. Install NFS CSI Driver and Create a StorageClass](#2-install-nfs-csi-driver-and-create-a-storageclass)
-  - [2.1. Create Repo](#21-create-repo)
+  - [2.1. Create ClusterRepo](#21-create-clusterrepo)
     - [2.1.1. Option 1 - Create ClusterRepo from yaml (on source and destination)](#211-option-1---create-clusterrepo-from-yaml-on-source-and-destination)
       - [2.1.1.1. nfs-csi-repo.yaml](#2111-nfs-csi-repoyaml)
     - [2.1.2. Option 2 - Create ClusterRepo in Rancher UI](#212-option-2---create-clusterrepo-in-rancher-ui)
       - [2.1.2.1. Apps -\> Repositories -\> Create](#2121-apps---repositories---create)
       - [2.1.2.2. Populate data](#2122-populate-data)
-  - [2.2. Creatae NFS Storage Class](#22-creatae-nfs-storage-class)
+  - [2.2. Create NFS Storage Class](#22-create-nfs-storage-class)
     - [2.2.1. Option 1 - Create StorageClass from yaml (on source and destination)](#221-option-1---create-storageclass-from-yaml-on-source-and-destination)
       - [2.2.1.1. example nfs-storageclass.yaml](#2211-example-nfs-storageclassyaml)
     - [2.2.2. Option 2 - Create StorageClass from Rancher UI](#222-option-2---create-storageclass-from-rancher-ui)
@@ -44,7 +44,7 @@
 
 # 2. Install NFS CSI Driver and Create a StorageClass
 
-## 2.1. Create Repo
+## 2.1. Create ClusterRepo
 
 ### 2.1.1. Option 1 - Create ClusterRepo from yaml (on source and destination)
 
@@ -78,7 +78,7 @@ kubectl apply -f nfs-csi-repo.yaml
 
 ![Insert Screenshot](./images/media/add_nfs_csi_repo2.png)
 
-## 2.2. Creatae NFS Storage Class
+## 2.2. Create NFS Storage Class
 
 ### 2.2.1. Option 1 - Create StorageClass from yaml (on source and destination)
 
@@ -96,6 +96,10 @@ parameters:
 provisioner: nfs.csi.k8s.io
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
+```
+
+```
+kubectl apply -f nfs-storageclass.yaml
 ```
 
 ### 2.2.2. Option 2 - Create StorageClass from Rancher UI
