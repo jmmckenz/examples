@@ -137,12 +137,14 @@ example output:
 ## 2.4. Setup StackPack for each cluster
 
 ![Insert Screenshot](./images/media/stackpack1.png)
+
 ![Insert Screenshot](./images/media/stackpack2.png)
 
 ### 2.4.1. Generate a new token 
 #### 2.4.1.1. Token needs to be generated at least once.  It can be reused for multiple clusters, or each cluster can have a unique token.
 
 ![Insert Screenshot](./images/media/stackpack3.png)
+
 ![Insert Screenshot](./images/media/stackpack4.png)
 
 
@@ -155,8 +157,11 @@ example output:
 ## 3.2. Install Agent
 
 ![Insert Screenshot](./images/media/apps_charts_filter_observability.png)
+
 ![Insert Screenshot](./images/media/apps_charts_install_observability.png)
+
 ![Insert Screenshot](./images/media/apps_charts_install_step1_observability.png)
+
 ![Insert Screenshot](./images/media/apps_charts_install_step2_observability.png)
 
 * Cluster Name = {{identifier from StackPack setup}}
