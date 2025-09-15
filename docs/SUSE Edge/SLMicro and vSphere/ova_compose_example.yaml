@@ -1,0 +1,80 @@
+system:
+    name: slmicro-6.1-template
+    type: vmx-20
+    os_vmw: suse-64
+    firmware: efi
+    secure_boot: true
+    default_configuration: grande
+
+networks:
+    vm_network:
+        name: "VM Network"
+        description: "The VM Network network"
+
+hardware:
+    cpus: 2
+    memory: 2048
+    sata1:
+        type: sata_controller
+    scsi1:
+        type: scsi_controller
+    cdrom1:
+        type: cd_drive
+        parent: sata1
+    rootdisk:
+        type: hard_disk
+        parent: scsi1
+        disk_image: example.vmdk
+    usb1:
+        type: usb_controller
+    ethernet1:
+        type: ethernet
+        subtype: VmxNet3
+        network: vm_network
+    videocard1:
+        type: video_card
+    vmci1:
+        type: vmci
+
+configurations:
+    tall:
+        label: Tall
+        description: too little for the money
+    grande:
+        label: Grande
+        description: just right
+    venti:
+        label: Venti
+        description: too much
+
+environment:
+    transports:
+        - com.vmware.guestInfo
+        - iso
+    categories:
+        email: Email Settings
+    properties:
+        guestinfo.admin.email:
+            value: admin@company.org
+            user_configurable: true
+            type: string
+            description: "The Admin's email address"
+            label: "Email Address"
+            category: email
+
+extra_configs:
+    feature.enabled:
+        required: false
+        value: true
+    log.rotateSize:
+        value: 2048000
+
+product:
+    product: An Example VM
+    vendor: A Company Inc.
+
+annotation:
+    text: the password is top secret
+
+eula:
+    file: eula.txt
