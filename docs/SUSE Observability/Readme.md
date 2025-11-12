@@ -134,6 +134,15 @@ example output:
 ✅ Service token created: svctok-9Lf6HvTZ1gzQQFtXlin09DRzV_pSLBbn
 ```
 
+## NEED ANOTHER SECTION HERE....SETUP Observability Plugin on RANCHER Cluster
+
+![Insert Screenshot](./images/media/rancherplugin1.png)
+
+
+
+
+
+
 ## 2.4. Setup StackPack for each cluster
 
 ![Insert Screenshot](./images/media/stackpack1.png)
