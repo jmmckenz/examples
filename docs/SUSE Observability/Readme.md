@@ -11,12 +11,13 @@
   - [1.8. Install suse-observability](#18-install-suse-observability)
   - [1.9. Get initial admin password from baseConfig\_values.yaml comments](#19-get-initial-admin-password-from-baseconfig_valuesyaml-comments)
 - [2. Initial setup of Observability](#2-initial-setup-of-observability)
-  - [2.1. Get Api key and command line from observability CLI page to install STS CLI](#21-get-api-key-and-command-line-from-observability-cli-page-to-install-sts-cli)
-  - [2.2. Install STS CLI (cut and paste from screenshot)](#22-install-sts-cli-cut-and-paste-from-screenshot)
+  - [2.1. Installing UI extensions](#21-installing-ui-extensions)
+  - [2.2. Get Api key and command line from observability CLI page to install STS CLI](#22-get-api-key-and-command-line-from-observability-cli-page-to-install-sts-cli)
   - [2.3. Retrieve service token](#23-retrieve-service-token)
-  - [2.4. Setup StackPack for each cluster](#24-setup-stackpack-for-each-cluster)
-    - [2.4.1. Generate a new token](#241-generate-a-new-token)
-      - [2.4.1.1. Token needs to be generated at least once.  It can be reused for multiple clusters, or each cluster can have a unique token.](#2411-token-needs-to-be-generated-at-least-once--it-can-be-reused-for-multiple-clusters-or-each-cluster-can-have-a-unique-token)
+  - [2.4. Configure UI extension](#24-configure-ui-extension)
+  - [2.5. Setup StackPack for each cluster](#25-setup-stackpack-for-each-cluster)
+    - [2.5.1. Generate a new token](#251-generate-a-new-token)
+      - [2.5.1.1. Token needs to be generated at least once.  It can be reused for multiple clusters, or each cluster can have a unique token.](#2511-token-needs-to-be-generated-at-least-once--it-can-be-reused-for-multiple-clusters-or-each-cluster-can-have-a-unique-token)
 - [3. Install Observability Agent on clusters](#3-install-observability-agent-on-clusters)
   - [3.1. Setup Repository](#31-setup-repository)
   - [3.2. Install Agent](#32-install-agent)
@@ -110,20 +111,41 @@ example:
 
 # 2. Initial setup of Observability
 
-## 2.1. Get Api key and command line from observability CLI page to install STS CLI
+
+## 2.1. Installing UI extensions
+To install UI extensions, enable the UI extensions from the rancher UI
+
+![Insert Screenshot](./images/media/rancherplugin1.png)
+
+Install
+After enabling UI extensions, follow these steps:
+
+Navigate to extensions on the rancher UI and under the "Available" section of extensions, you will find the Observability extension.
+
+Install the Observability extension.
+
+Once installed, on the left panel of the rancher UI, the SUSE Observability section appears.
+
+Follow the instructions as mentioned in Obtain a service token section below and fill in the details.
+
+## 2.2. Get Api key and command line from observability CLI page to install STS CLI
 
 ![Insert Screenshot](./images/media/sts_cli.png)
 
-## 2.2. Install STS CLI (cut and paste from screenshot)
 
+## 2.3. Retrieve service token
+Log into the SUSE Observability instance.
+
+From the top left corner, select CLI.
+
+Note the API token and install SUSE Observability cli on your local machine.
 example:
 
 ```
 curl -o- https://dl.stackstate.com/stackstate-cli/install.sh | STS_URL="https://obscluster.mchome-lab.duckdns.org" STS_API_TOKEN="wtADN67qd9fzX0Yy4EIxxyQiSH0tx17T" bash
 ```
 
-## 2.3. Retrieve service token
-
+Create a service token by running
 ```
 sts service-token create --name suse-observability-extension --roles stackstate-k8s-troubleshooter --skip-ssl
 ```
@@ -134,23 +156,18 @@ example output:
 ✅ Service token created: svctok-9Lf6HvTZ1gzQQFtXlin09DRzV_pSLBbn
 ```
 
-## NEED ANOTHER SECTION HERE....SETUP Observability Plugin on RANCHER Cluster
-
-![Insert Screenshot](./images/media/rancherplugin1.png)
-
+## 2.4. Configure UI extension
+In Rancher, navigate to the SUSE Observability section and select "configurations". In this section, you can add the SUSE Observability server details and connect it using the URL and the the observability extension service token generated above.
 
 
-
-
-
-## 2.4. Setup StackPack for each cluster
+## 2.5. Setup StackPack for each cluster
 
 ![Insert Screenshot](./images/media/stackpack1.png)
 
 ![Insert Screenshot](./images/media/stackpack2.png)
 
-### 2.4.1. Generate a new token 
-#### 2.4.1.1. Token needs to be generated at least once.  It can be reused for multiple clusters, or each cluster can have a unique token.
+### 2.5.1. Generate a new token 
+#### 2.5.1.1. Token needs to be generated at least once.  It can be reused for multiple clusters, or each cluster can have a unique token.
 
 ![Insert Screenshot](./images/media/stackpack3.png)
 
