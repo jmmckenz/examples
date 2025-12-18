@@ -146,6 +146,7 @@ vi /etc/rancher/rke2/config.yaml
 token: my-shared-secret
 tls-san:
   - rancher.mycompany.com
+ingress-controller: traefik
 ```
 
 > RKE2 will create a config.yaml file on the first node if one does not exist.
@@ -184,6 +185,8 @@ token: my-shared-secret
 server: https://10.0.0.10:9345 #Use IP address of first node on port 9345
 tls-san:
   - rancher.mycompany.com
+ingress-controller: traefik
+
 ```
 > If not using a prepopulated token like "my-shared-secret", use the
 > token found in /var/lib/rancher/rke2/server/token from the Primary
