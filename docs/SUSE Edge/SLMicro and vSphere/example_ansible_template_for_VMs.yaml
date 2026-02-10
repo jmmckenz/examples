@@ -12,7 +12,7 @@ runcmd:
 #  - transactional-update --continue blah blah
 
 # Set Hostname
-  - transactional-update --continue set-hostname <new-hostname>
+  - nmcli general hostname <new-hostname>
 
 # Add Static Ip (For after templating)
   - nmcli con add type ethernet con-name eth0 ifname eth0 ip4 {{ HOSTIP_CIDR }} gw4 {{ GATEWAY }}
@@ -20,3 +20,9 @@ runcmd:
 
 # Rebuild bootloader
   - transactional-update --continue run update-bootloader
+ 
+power_state:
+  mode: reboot
+  message: Rebooting
+  timeout: 10
+  condition: True
