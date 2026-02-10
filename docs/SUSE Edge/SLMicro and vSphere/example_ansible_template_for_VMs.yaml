@@ -2,6 +2,22 @@
 package_update: true
 # disable root user
 disable_root: true
+
+disk_setup:
+    /dev/sdb:
+        table_type: 'mbr'
+        layout:
+        - 50
+        - 50
+        overwrite: true
+
+fs_setup:
+    - label: LONGHORN
+      filesystem: 'xfs'
+      device: '/dev/sdb'
+      partition: sdb1
+      overwrite: true
+
 runcmd:
 # Temporarily register template machine with scc to enable zypper repos
   - transactional-update --continue register --url https://scc.suse.com -r {{ SCCREGCODEXXX }}
@@ -12,7 +28,7 @@ runcmd:
 #  - transactional-update --continue blah blah
 
 # Set Hostname
-  - nmcli general hostname <new-hostname>
+#  - nmcli general hostname <new-hostname>
 
 # Add Static Ip (For after templating)
   - nmcli con add type ethernet con-name eth0 ifname eth0 ip4 {{ HOSTIP_CIDR }} gw4 {{ GATEWAY }}
@@ -20,7 +36,18 @@ runcmd:
 
 # Rebuild bootloader
   - transactional-update --continue run update-bootloader
- 
+
+# Partition
+  - /sbin/partx --update /dev/sdb
+  - /sbin/mkfs.xfs /dev/sdb1
+
+mounts:
+    - [/dev/sdb1, /longhorn, xfs, "defaults", "0", "0"]
+
+hostname: {{ hostname }}
+
+timezone: America/Chicago
+
 power_state:
   mode: reboot
   message: Rebooting
