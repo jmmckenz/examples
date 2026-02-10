@@ -1,0 +1,23 @@
+#cloud-config
+package_update: true
+# disable root user
+disable_root: true
+runcmd:
+# Temporarily register template machine with scc to enable zypper repos
+  - transactional-update --continue register --url https://scc.suse.com -r {{ SCCREGCODEXXX }}
+# Install system packages
+  - transactional-update --continue --non-interactive pkg install {{ PACKAGE_LIST }}
+
+# Do other things to immutable
+  - transactional-update --continue blah blah
+
+# Do things to regular areas
+  - command-line
+
+
+# Add Static Ip (For after templating)
+  - nmcli con add type ethernet con-name eth0 ifname eth0 ip4 {{ HOSTIP_CIDR }} gw4 {{ GATEWAY }}
+  - rm /etc/NetworkManager/system-connections/cloud*
+
+# Rebuild bootloader
+  - transactional-update --continue run update-bootloader
