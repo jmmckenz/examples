@@ -34,15 +34,11 @@ runcmd:
   - transactional-update --continue --non-interactive pkg install jq net-tools ca-certificates cloud-init cloud-init-config-suse openssh-server open-vm-tools nfs-client
 # Disable Auto update transaction-update.timer
   - transactional-update --continue run systemctl --now disable transactional-update.timer
-# Set cgroupv1 hiearachy enabled
-  - sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0"/' /etc/default/grub
 # Disable selinux
   - sed -i 's/selinux=1/selinux=0/' /etc/default/grub
-# Enable ia32_emulation
-  - sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="ia32_emulation=on /' /etc/default/grub
-  - sed -i 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
-# Potential Work Around for fsck issue
-  - transactional-update --continue run dracut --regenerate-all -f -N
+# Add Static Ip (For after templating)
+#  - nmcli con add type ethernet con-name eth0 ifname eth0 ip4 192.168.50.120/24 gw4 192.168.50.1
+#  - rm /etc/NetworkManager/system-connections/cloud*
 # Deregister template machine from scc
   - transactional-update --continue register -d --url https://scc.suse.com -r SCCREGCODEXXX
 # Rebuild bootloader
@@ -69,8 +65,11 @@ users:
 power_state:
   mode: poweroff
   message: Powering Off for Templating
+  # mode: reboot
+  # message: Rebooting
   timeout: 10
   condition: True
+
   ```
   
 [user-data example](../code_examples/vsphere-cloud-init-userdata-example-final.txt)
