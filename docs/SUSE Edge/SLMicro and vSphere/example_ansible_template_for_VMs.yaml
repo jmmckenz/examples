@@ -12,7 +12,7 @@ runcmd:
 #  - transactional-update --continue blah blah
 
 # Set Hostname
-  - transactional-update --continuse set-hostname <new-hostname>
+  - transactional-update --continue set-hostname <new-hostname>
 
 # Add Static Ip (For after templating)
   - nmcli con add type ethernet con-name eth0 ifname eth0 ip4 {{ HOSTIP_CIDR }} gw4 {{ GATEWAY }}
