@@ -91,7 +91,7 @@ Generate hashed password using openssl
 openssl passwd -6 -salt 7d651f2c15538f8c2f5542c4c05d061b password
 ```
 
-## 1.2. Convert to base64\
+## 1.2. Convert to base64
 
 ```sh
 cat user-data |base64

@@ -9,11 +9,10 @@ runcmd:
   - transactional-update --continue --non-interactive pkg install {{ PACKAGE_LIST }}
 
 # Do other things to immutable
-  - transactional-update --continue blah blah
+#  - transactional-update --continue blah blah
 
-# Do things to regular areas
-  - command-line
-
+# Set Hostname
+  - transactional-update --continuse set-hostname <new-hostname>
 
 # Add Static Ip (For after templating)
   - nmcli con add type ethernet con-name eth0 ifname eth0 ip4 {{ HOSTIP_CIDR }} gw4 {{ GATEWAY }}
