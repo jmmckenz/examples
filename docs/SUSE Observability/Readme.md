@@ -97,7 +97,7 @@ helm upgrade --install \
   --values $VALUES_DIR/suse-observability-values/templates/ingress_values.yaml \
   --values $VALUES_DIR/suse-observability-values/templates/baseConfig_values.yaml \
   --values $VALUES_DIR/suse-observability-values/templates/sizing_values.yaml \
-  --set stackstate.allowedOrigins={"https://yourrancher.server.com"}
+  --set stackstate.allowedOrigins={"https://yourrancher.server.com"} \
   suse-observability \
   suse-observability/suse-observability
 ```
