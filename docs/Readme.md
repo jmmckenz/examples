@@ -514,10 +514,12 @@ generated](./images/media/image7.png)
 > Provide a Cluster Name, desired RKE2 version, and any other customized information
 >
 > Click Create
-
 ![A screenshot of a computer Description automatically
 generated](./images/media/image8.png)
 
+#### 4.1.4.1
+> Once you have made all the desired customizations, you can click "Edit as Yaml" instead to review or capture the generated yaml.  If you plan on using the generated yaml as a template for later use, you will need to comment out the "_clone" line and the entire spec.machineSelectorConfig stanza toward the bottom.  Make sure you leave the spec.rke2.machineSelectorConfig in as is. More information on the Cluster resource and configuration can be found [here](<https://documentation.suse.com/cloudnative/rancher-manager/v2.14/en/cluster-deployment/configuration/rke2.html#_cluster_config_file_reference>.
+> 
 ### 4.1.5. The resulting page once the Cluster resource is created
 
 > Check the box next to "Insecure" if you need to skip TLS verification
