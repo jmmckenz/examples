@@ -636,7 +636,7 @@ kubectl get clusterregistrationtoken.management.cattle.io  default-token -n c-m-
 ```
 #### 4.3.2.4. Windows Node
 ```
-kubectl get clusterregistrationtoken.management.cattle.io  default-token -n c-m-9lzpg9pd -o jsonpath='{.status.insecureNodeCommand}{"\n"}'
+kubectl get clusterregistrationtoken.management.cattle.io  default-token -n c-m-9lzpg9pd -o jsonpath='{.status.insecureWindowsNodeCommand}{"\n"}'
 ```
 # 5. Longhorn Backup To MINIO
 
