@@ -533,6 +533,9 @@ generated](./images/media/image9.png)
 
 <https://www.suse.com/support/kb/doc/?id=000020121>
 
+### 4.2.1.2 Alternatively Create Cluster from Yaml
+<https://documentation.suse.com/cloudnative/rancher-manager/v2.14/en/cluster-deployment/configuration/rke2.html#_cluster_config_file_reference>
+
 ### 4.2.2. Example for getting custom cluster registration command:
 
 \* Rancher URI = rancher.mycompany.com
@@ -598,6 +601,31 @@ c-m-shw7c57m
                                  Dload  Upload   Total   Spent    Left  Speed
 100 10861    0 10861    0     0   165k      0 --:--:-- --:--:-- --:--:--  165k
  curl.exe --insecure -fL https://rancher.mycompany.com/wins-agent-install.ps1 -o install.ps1; Set-ExecutionPolicy Bypass -Scope Process -Force; ./install.ps1 -Server https://rancher.mycompany.com -Label 'cattle.io/os=windows' -Token 5q2499v9xlqfhvsjrblkzw2dnq5kz5275h54gsb5nnfc665cv2kvtt -Worker -CaChecksum 5c02c9d41756c2cae614be39ac9444ec093d3a69a7b1edc931223a7f5391353c
+```
+## 4.3. Custom Cluster Registration using kubectl
+### 4.3.1. Get Cluster ID
+```
+kubectl get clusters.provisioning.cattle.io -n fleet-default downstream001 -o jsonpath='{.status.clusterName}{"\n"}'
+```
+### 4.3.2. Get Cluster Registration Curl Commands
+
+The following commands will return the curl command needed for joining base OS images to the downstream cluster. Alternatives to these commands would replace insecureNodeCommand and insecureWindowsNodeCommand with nodeCommand and windowsNodeCommand respectively to remove the "--insecure" from the returned curl command...
+
+#### 4.3.2.1. Controlplane, Etcd
+```
+kubectl get clusterregistrationtoken.management.cattle.io  default-token -n c-m-9lzpg9pd -o jsonpath='{.status.insecureNodeCommand}{" --controlplane --etcd\n"}'
+```
+#### 4.3.2.2. Controlplane, Etcd, and Worker
+```
+kubectl get clusterregistrationtoken.management.cattle.io  default-token -n c-m-9lzpg9pd -o jsonpath='{.status.insecureNodeCommand}{" --controlplane --etcd --worker\n"}'
+```
+#### 4.3.2.3. Worker Only
+```
+kubectl get clusterregistrationtoken.management.cattle.io  default-token -n c-m-9lzpg9pd -o jsonpath='{.status.insecureNodeCommand}{" --worker\n"}'
+```
+#### 4.3.2.4. Windows Node
+```
+kubectl get clusterregistrationtoken.management.cattle.io  default-token -n c-m-9lzpg9pd -o jsonpath='{.status.insecureNodeCommand}{"\n"}'
 ```
 # 5. Longhorn Backup To MINIO
 
