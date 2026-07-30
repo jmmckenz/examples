@@ -51,7 +51,7 @@
     - [4.1.2. From the Clusters Menu Click Create](#412-from-the-clusters-menu-click-create)
     - [4.1.3. From Cluster Create Menu Click Custom](#413-from-cluster-create-menu-click-custom)
     - [4.1.4. Create Cluster](#414-create-cluster)
-      - [4.1.4.1](#4141)
+      - [4.1.4.1 Optional Edit or Artifact Cluster Resource YAML](#4141-optional-edit-or-artifact-cluster-resource-yaml)
     - [4.1.5. The resulting page once the Cluster resource is created](#415-the-resulting-page-once-the-cluster-resource-is-created)
   - [4.2. Custom Cluster Registration from API calls](#42-custom-cluster-registration-from-api-calls)
     - [4.2.1. Creating Cluster through Rancher CLI or by API call documentation](#421-creating-cluster-through-rancher-cli-or-by-api-call-documentation)
@@ -526,7 +526,7 @@ generated](./images/media/image7.png)
 ![A screenshot of a computer Description automatically
 generated](./images/media/image8.png)
 
-#### 4.1.4.1
+#### 4.1.4.1 Optional Edit or Artifact Cluster Resource YAML
 > Once you have made all the desired customizations, you can click "Edit as Yaml" instead to review or capture the generated yaml.  If you plan on using the generated yaml as a template for later use, you will need to comment out the "_clone" line and the entire spec.machineSelectorConfig stanza toward the bottom.  Make sure you leave the spec.rke2.machineSelectorConfig in as is. More information on the Cluster resource and configuration can be found [here](https://documentation.suse.com/cloudnative/rancher-manager/v2.14/en/cluster-deployment/configuration/rke2.html#_cluster_config_file_reference)
 
 ### 4.1.5. The resulting page once the Cluster resource is created
