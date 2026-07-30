@@ -541,7 +541,7 @@ generated](./images/media/image9.png)
 
 ### 4.2.3. Get Cluster ID (returns rancher generated clusterid c-m-shw7c57m)
 ```
-curl --insecure https://rancher.mycompany.com/v3/clusters?name=downstream001 -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs"--insecure |jq -r .data[].id
+curl --insecure https://rancher.mycompany.com/v3/clusters?name=downstream001 -H 'content-type: application/json' -H "Authorization: Bearer token-hq8pw:9fkjfz85qfl7cxhzzm2d5jqbgf6x4fk4ng5md9g9msk6vtdgmws9bs" --insecure |jq -r .data[].id
 ```
 ### 4.2.4. Get Cluster Registration Curl Commands
 
