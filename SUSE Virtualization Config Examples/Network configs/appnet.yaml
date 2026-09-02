@@ -1,0 +1,12 @@
+apiVersion: network.harvesterhci.io/v1beta1
+kind: VlanConfig
+metadata:
+  name: appnet
+spec:
+  clusterNetwork: app
+  uplink:
+    bondOptions:
+      mode: active-backup
+    linkAttributes: {}
+    nics:
+    - enp2s0f1

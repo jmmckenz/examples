@@ -1,0 +1,7 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: homenet
+  namespace: default
+spec:
+  config: '{"cniVersion":"0.3.1","name":"homenet","type":"bridge","bridge":"app-br","promiscMode":true,"ipam":{}}'
