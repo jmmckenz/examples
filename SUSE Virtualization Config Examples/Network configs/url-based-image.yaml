@@ -1,0 +1,20 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  generateName: image-
+  name:
+  namespace: my-app
+spec:
+  backend: backingimage
+  checksum: ""
+  displayName: jammy-server-cloudimg-amd64.img-auto
+  pvcName: ""
+  pvcNamespace: ""
+  retry: 3
+  sourceType: download
+  storageClassParameters:
+    migratable: "true"
+    numberOfReplicas: "3"
+    staleReplicaTimeout: "30"
+  targetStorageClassName: harvester-longhorn
+  url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img

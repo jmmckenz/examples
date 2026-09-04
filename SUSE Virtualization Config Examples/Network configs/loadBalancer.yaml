@@ -1,0 +1,55 @@
+apiVersion: loadbalancer.harvesterhci.io/v1beta1
+kind: LoadBalancer
+metadata:
+  name: observability-ipp
+  namespace: my-app
+spec:
+  backendServerSelector:
+    guestcluster.harvesterhci.io/name:
+      - observability
+  healthCheck:
+    failureThreshold: 2
+    periodSeconds: 1
+    port: 443
+    successThreshold: 2
+    timeoutSeconds: 1
+  ipPool: obsrancher-ipp
+  ipam: pool
+  listeners:
+    - backendPort: 443
+      name: port443
+      port: 443
+      protocol: TCP
+    - backendPort: 80
+      name: port80
+      port: 80
+      protocol: TCP
+    - backendPort: 6443
+      name: port6443
+      port: 6443
+      protocol: TCP
+    - backendPort: 9345
+      name: port9345
+      port: 9345
+      protocol: TCP
+    - backendPort: 2376
+      name: port2376
+      port: 2376
+      protocol: TCP
+    - backendPort: 2379
+      name: port2379
+      port: 2379
+      protocol: TCP
+    - backendPort: 2380
+      name: port2380
+      port: 2381
+      protocol: TCP
+    - backendPort: 8443
+      name: port8443
+      port: 8443
+      protocol: TCP
+    - backendPort: 9443
+      name: port9443
+      port: 9443
+      protocol: TCP
+  workloadType: vm

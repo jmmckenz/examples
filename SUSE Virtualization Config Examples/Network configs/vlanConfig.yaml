@@ -1,0 +1,15 @@
+apiVersion: network.harvesterhci.io/v1beta1
+kind: VlanConfig
+metadata:
+  name: sfp-storage-nc
+spec:
+  clusterNetwork: sfp-storage
+  uplink:
+    bondOptions:
+      miimon: -1
+      mode: 802.3ad
+    linkAttributes:
+      txQLen: -1
+    nics:
+      - eno3
+      - eno4
