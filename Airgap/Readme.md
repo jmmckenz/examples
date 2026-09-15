@@ -15,6 +15,9 @@ https://github.com/clemenko/rke_airgap_install
 https://docs.apps.rancher.io/howto-guides/integrate-with-hauler
 
 # Helm Chart Repos
+https://jfrog.com/help/r/artifactory-how-to-configure-a-helmoci-remote-repository-to-proxy-bitnami-charts-registry/artifactory-how-to-configure-a-helmoci-remote-repository-to-proxy-bitnami-charts-registry
+
+
 https://charts.rancher.com/server-charts/prime
 
 https://charts.jetstack.io
@@ -24,6 +27,8 @@ https://kube-vip.github.io/helm-charts
 https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
 
 https://charts.rancher.com/server-charts/prime/suse-observability
+
+https://ceph.github.io/csi-charts
 
 # Git based helm repos
 https://github.com/rancher/partner-extensions
