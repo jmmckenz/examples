@@ -1,0 +1,12 @@
+apiVersion: v2
+appVersion: "1.0"
+description: A Helm chart for deploying the 389 Directory Server
+keywords:
+- ldap
+- "389"
+- "636"
+maintainers:
+- email: raul.mahiques@suse.com
+  name: rmahique
+name: ds389
+version: 1.0.2
