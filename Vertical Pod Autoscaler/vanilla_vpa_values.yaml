@@ -1,0 +1,221 @@
+admissionController:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - admission-controller
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+  annotations: {}
+  certGen:
+    affinity: {}
+    enabled: true
+    env: {}
+    image:
+      pullPolicy: IfNotPresent
+      repository: registry.k8s.io/ingress-nginx/kube-webhook-certgen
+      tag: v20231011-8b53cabe0
+    nodeSelector: {}
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      seccompProfile:
+        type: RuntimeDefault
+    priorityClassName: ''
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+    tolerations: []
+  certManager:
+    annotations: {}
+    createSelfSignedIssuer:
+      duration: 8760h
+      enabled: false
+      renewBefore: 720h
+    duration: 168h
+    enabled: false
+    issuerRef:
+      group: cert-manager.io
+      kind: ClusterIssuer
+      name: ''
+    privateKey:
+      algorithm: RSA
+      size: 2048
+    renewBefore: 24h
+  enabled: true
+  extraArgs: []
+  extraEnv: []
+  hostNetwork: false
+  image:
+    pullPolicy: IfNotPresent
+    repository: registry.k8s.io/autoscaling/vpa-admission-controller
+    tag: null
+  logLevel: 4
+  mutatingWebhookConfiguration:
+    annotations: {}
+    failurePolicy: Ignore
+    namespaceSelector: {}
+    objectSelector: {}
+    timeoutSeconds: 5
+  nodeSelector: {}
+  podAnnotations: {}
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: null
+    minAvailable: 1
+  podLabels: {}
+  priorityClassName: null
+  registerWebhook: false
+  replicas: 2
+  resources: {}
+  revisionHistoryLimit: 10
+  service:
+    annotations: {}
+    name: vpa-webhook
+    ports:
+      - port: 443
+        protocol: TCP
+        targetPort: 8000
+  serviceAccount:
+    annotations: {}
+    create: true
+    labels: {}
+  tls:
+    caCert: ''
+    cert: ''
+    create: false
+    key: ''
+    secretName: vpa-tls-certs
+  tolerations: []
+  topologySpreadConstraints: []
+  volumeMounts:
+    - mountPath: /etc/tls-certs
+      name: tls-certs
+      readOnly: true
+  volumes:
+    - name: tls-certs
+      secret:
+        defaultMode: 420
+        items:
+          - key: ca
+            path: caCert.pem
+          - key: cert
+            path: serverCert.pem
+          - key: key
+            path: serverKey.pem
+        secretName: vpa-tls-certs
+commonLabels: {}
+containerSecurityContext: {}
+crds:
+  enabled: true
+  keep: true
+fullnameOverride: null
+imagePullSecrets: []
+nameOverride: null
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+rbac:
+  create: true
+  extraRules: []
+recommender:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - recommender
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+  annotations: {}
+  enabled: true
+  extraArgs: []
+  extraEnv: []
+  image:
+    pullPolicy: IfNotPresent
+    repository: registry.k8s.io/autoscaling/vpa-recommender
+    tag: null
+  leaderElection:
+    enabled: null
+    leaseDuration: 15s
+    renewDeadline: 10s
+    resourceName: vpa-recommender-lease
+    resourceNamespace: ''
+    retryPeriod: 2s
+  logLevel: 4
+  nodeSelector: {}
+  podAnnotations: {}
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: null
+    minAvailable: 1
+  podLabels: {}
+  priorityClassName: null
+  replicas: 2
+  resources: {}
+  revisionHistoryLimit: 10
+  serviceAccount:
+    annotations: {}
+    create: true
+    labels: {}
+  tolerations: []
+  topologySpreadConstraints: []
+updater:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - updater
+            topologyKey: kubernetes.io/hostname
+          weight: 100
+  annotations: {}
+  enabled: true
+  extraArgs:
+    - '--in-place-skip-disruption-budget=true'
+  image:
+    pullPolicy: IfNotPresent
+    repository: registry.k8s.io/autoscaling/vpa-updater
+    tag: null
+  leaderElection:
+    enabled: null
+    leaseDuration: 15s
+    renewDeadline: 10s
+    resourceName: vpa-updater-lease
+    resourceNamespace: ''
+    retryPeriod: 2s
+  logLevel: 4
+  nodeSelector: {}
+  podAnnotations: {}
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: null
+    minAvailable: 1
+  podLabels: {}
+  priorityClassName: null
+  replicas: 2
+  resources: {}
+  revisionHistoryLimit: 10
+  serviceAccount:
+    annotations: {}
+    create: true
+    labels: {}
+  tolerations: []
+  topologySpreadConstraints: []

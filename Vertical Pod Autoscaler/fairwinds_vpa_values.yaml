@@ -1,0 +1,232 @@
+admissionController:
+  affinity: {}
+  annotations: {}
+  certGen:
+    affinity: {}
+    env: {}
+    image:
+      pullPolicy: Always
+      repository: registry.k8s.io/ingress-nginx/kube-webhook-certgen
+      tag: v20230312-helm-chart-4.5.2-28-g66a760794
+    nodeSelector: {}
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      seccompProfile:
+        type: RuntimeDefault
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+    tolerations: []
+  enabled: true
+  extraArgs: {}
+  generateCertificate: true
+  httpPort: 8000
+  image:
+    pullPolicy: Always
+    repository: registry.k8s.io/autoscaling/vpa-admission-controller
+    tag: ''
+  livenessProbe:
+    failureThreshold: 6
+    httpGet:
+      path: /health-check
+      port: metrics
+      scheme: HTTP
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  metricsPort: 8944
+  mutatingWebhookConfiguration:
+    annotations: {}
+    failurePolicy: Ignore
+    namespaceSelector: {}
+    objectSelector: {}
+    timeoutSeconds: 5
+  nodeSelector: {}
+  podAnnotations: {}
+  podDisruptionBudget: {}
+  podLabels: {}
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    seccompProfile:
+      type: RuntimeDefault
+  readinessProbe:
+    failureThreshold: 120
+    httpGet:
+      path: /health-check
+      port: metrics
+      scheme: HTTP
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  registerWebhook: false
+  replicaCount: 1
+  resources:
+    limits: {}
+    requests:
+      cpu: 50m
+      memory: 200Mi
+  revisionHistoryLimit: 10
+  secretName: '{{ include "vpa.fullname" . }}-tls-secret'
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+  tlsSecretKeys: []
+  tolerations: []
+  useHostNetwork: false
+fullnameOverride: ''
+imagePullSecrets: []
+metrics-server:
+  enabled: false
+nameOverride: ''
+podLabels: {}
+priorityClassName: ''
+rbac:
+  create: true
+  extraRules:
+    vpaActor: []
+    vpaCheckpointActor: []
+    vpaEvictioner: []
+    vpaMetricsReader: []
+    vpaStatusActor: []
+    vpaStatusReader: []
+    vpaTargetReader: []
+    vpaUpdaterInPlace: []
+recommender:
+  affinity: {}
+  annotations: {}
+  enabled: true
+  envFromSecret: ''
+  extraArgs:
+    pod-recommendation-min-cpu-millicores: 15
+    pod-recommendation-min-memory-mb: 100
+    v: '4'
+  image:
+    pullPolicy: Always
+    repository: registry.k8s.io/autoscaling/vpa-recommender
+    tag: ''
+  livenessProbe:
+    failureThreshold: 6
+    httpGet:
+      path: /health-check
+      port: metrics
+      scheme: HTTP
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  nodeSelector: {}
+  podAnnotations: {}
+  podDisruptionBudget: {}
+  podLabels: {}
+  podMonitor:
+    annotations: {}
+    enabled: false
+    labels: {}
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    seccompProfile:
+      type: RuntimeDefault
+  readinessProbe:
+    failureThreshold: 120
+    httpGet:
+      path: /health-check
+      port: metrics
+      scheme: HTTP
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  replicaCount: 1
+  resources:
+    limits: {}
+    requests:
+      cpu: 50m
+      memory: 500Mi
+  revisionHistoryLimit: 10
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+  tolerations: []
+serviceAccount:
+  annotations: {}
+  automountServiceAccountToken: true
+  create: true
+  name: ''
+tests:
+  image:
+    pullPolicy: Always
+    repository: alpine/kubectl
+    tag: 1.36.4
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 10324
+updater:
+  affinity: {}
+  annotations: {}
+  enabled: true
+  extraArgs: {}
+  image:
+    pullPolicy: Always
+    repository: registry.k8s.io/autoscaling/vpa-updater
+    tag: ''
+  livenessProbe:
+    failureThreshold: 6
+    httpGet:
+      path: /health-check
+      port: metrics
+      scheme: HTTP
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  nodeSelector: {}
+  podAnnotations: {}
+  podDisruptionBudget: {}
+  podLabels: {}
+  podMonitor:
+    annotations: {}
+    enabled: false
+    labels: {}
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    seccompProfile:
+      type: RuntimeDefault
+  readinessProbe:
+    failureThreshold: 120
+    httpGet:
+      path: /health-check
+      port: metrics
+      scheme: HTTP
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  replicaCount: 1
+  resources:
+    limits: {}
+    requests:
+      cpu: 50m
+      memory: 500Mi
+  revisionHistoryLimit: 10
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+  tolerations: []
