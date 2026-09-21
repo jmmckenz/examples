@@ -6,5 +6,4 @@
 
 # Once enough data has been collected, you can change the updateMode to "Recreate", "InPlaceOrRecreate", or "Initial" to allow VPA to automatically adjust the resource requests and limits for your pods. Please note that "InPlaceOrRecreate" mode is beta as of Kubernetes 1.33 and may not be supported in all environments. This feature graduated to GA GA as of Kubernetes 1.35 . Always test changes in a staging environment before applying them to production.
 
-# Use of this script assumes previous installation of VPA (either from 
-# vanilla kubernetes git repository or through the kubernetes hosted helm chart).
+# Use of this script assumes previous installation of VPA (either from vanilla kubernetes git repository or through the kubernetes hosted helm chart).
