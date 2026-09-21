@@ -1,0 +1,266 @@
+name: helm-grafana-no-pyro
+defaultNamespace: grafanacloud
+helm:
+  repo: https://grafana.github.io/helm-charts
+  chart: k8s-monitoring
+  releaseName: grafana-k8s-monitoring
+  version: 3.8.0
+  values:
+    collectorCommon:
+      alloy:
+        image:
+          tag: v1.7.0
+    cluster:
+      name: dev-region
+    global:
+      scrapeInterval: 60s
+      scrapeTimeout: 10s
+      maxCacheSize: 1000000
+    destinations:
+      - name: grafana-cloud-metrics
+        type: prometheus
+        url: https://prometheus-us-central1.grafana.net/api/prom/push
+        auth:
+          type: basic
+          username: ""
+          password: ""
+        proxyURL: "http://proxy.cs.zionsbank.com:8080"
+        extraLabels:
+          environment: dev
+          provider: onprem
+      - name: grafana-cloud-otlp-endpoint
+        type: otlp
+        url: https://otlp-gateway-prod-us-central-0.grafana.net/otlp
+        protocol: http
+        auth:
+          type: basic
+          username: ""
+          password: ""
+        proxyURL: "http://proxy.cs.zionsbank.com:8080"
+        processors:
+          # Enriches telemetry with K8s metadata by matching pod labels
+          # Examples of attributes we want on OTLP telemetry pulled from labels on pods
+          k8sattributes:
+            labels:
+              - from: "pod"
+                key: "app"
+                tag_name: "app"
+              - from: "pod"
+                key: "team"
+                tag_name: "team"
+          # Examples of static attributes we set per cluster on OTLP telemetry
+          # These are added to ALL telemetry from this cluster
+          attributes:
+            actions:
+              - key: environment
+                action: upsert
+                value: dev
+              - key: provider
+                action: upsert
+                value: onprem
+          # Sets OpenTelemetry semantic conventions from K8s labels
+          # when not already present. The "where ... == nil" conditions ensure we don't
+          # overwrite explicitly set values from instrumented apps
+          # This provides sensible defaults for apps without full instrumentation
+          transform:
+            metrics:
+              resource:
+                - set(attributes["deployment.environment"], "dev") where attributes["deployment.environment"] == nil
+                - set(attributes["service.name"], attributes["k8s.pod.labels.app_kubernetes_io/name"]) where attributes["service.name"] == nil and attributes["k8s.pod.labels.app_kubernetes_io/name"] != nil
+                - set(attributes["service.version"], attributes["k8s.pod.labels.app_kubernetes_io/version"]) where attributes["service.version"] == nil and attributes["k8s.pod.labels.app_kubernetes_io/version"] != nil
+                - set(attributes["service.instance.id"], attributes["k8s.pod.name"]) where attributes["service.instance.id"] == nil and attributes["k8s.pod.name"] != nil
+            logs:
+              resource:
+                - set(attributes["deployment.environment"], "dev") where attributes["deployment.environment"] == nil
+                - set(attributes["service.name"], attributes["k8s.pod.labels.app_kubernetes_io/name"]) where attributes["service.name"] == nil and attributes["k8s.pod.labels.app_kubernetes_io/name"] != nil
+                - set(attributes["service.version"], attributes["k8s.pod.labels.app_kubernetes_io/version"]) where attributes["service.version"] == nil and attributes["k8s.pod.labels.app_kubernetes_io/version"] != nil
+                - set(attributes["service.instance.id"], attributes["k8s.pod.name"]) where attributes["service.instance.id"] == nil and attributes["k8s.pod.name"] != nil
+            traces:
+              resource:
+                - set(attributes["deployment.environment"], "dev") where attributes["deployment.environment"] == nil
+                - set(attributes["service.name"], attributes["k8s.pod.labels.app_kubernetes_io/name"]) where attributes["service.name"] == nil and attributes["k8s.pod.labels.app_kubernetes_io/name"] != nil
+                - set(attributes["service.version"], attributes["k8s.pod.labels.app_kubernetes_io/version"]) where attributes["service.version"] == nil and attributes["k8s.pod.labels.app_kubernetes_io/version"] != nil
+                - set(attributes["service.instance.id"], attributes["k8s.pod.name"]) where attributes["service.instance.id"] == nil and attributes["k8s.pod.name"] != nil  # Pyroscope endpoint for continuous profiling data
+    clusterMetrics:
+      enabled: true
+      nodeLabels:
+        nodeArchitecture: true
+        instanceType: true
+        nodeOS: true
+      kube-state-metrics:
+        # Enable the below and change discoveryType to endpoints if multiple replicas with autosharding are desired
+        autosharding:
+          enabled: true
+        replicas: 3
+        discoveryType: service
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
+        metricsTuning:
+          includeMetrics:
+            - k8s.grafana.com/metrics.portName: "metrics"
+      # Remove kepler if we don't want energy usage stats
+      kepler:
+        enabled: true
+    annotationAutodiscovery:
+      enabled: true
+    prometheusOperatorObjects:
+      enabled: true
+      crds:
+        deploy: true
+    clusterEvents:
+      enabled: true
+    nodeLogs:
+      enabled: true
+    podLogs:
+      enabled: true
+    applicationObservability:
+      enabled: true
+      receivers:
+        otlp:
+          http:
+            enabled: true
+            port: 4318
+          grpc:
+            enabled: true
+            port: 4317
+      # Filters drop noisy, low-value telemetry to reduce cost and improve signal-to-noise
+      traces:
+        filters:
+          span:
+            # Health check and monitoring endpoints - high volume, no business value
+            - IsMatch(attributes["http.route"], ".*/health.*")
+            - IsMatch(attributes["http.route"], ".*/live.*")
+            - IsMatch(attributes["http.route"], ".*/readiness.*")
+            - IsMatch(attributes["http.route"], ".*/startup.*")
+            - IsMatch(attributes["http.route"], ".*/heartbeat.*")
+            - IsMatch(attributes["http.route"], ".*/ready.*")
+            - IsMatch(attributes["http.route"], ".*/ping.*")
+            - IsMatch(attributes["http.route"], ".*/actuator.*")
+            - IsMatch(attributes["http.route"], ".*/metrics.*")
+            # Database ping operations - connection keep-alives, not useful for debugging
+            - attributes["db.operation"] == "PING"
+            # HTTP method filtering - preflight requests have no useful trace data
+            - 'attributes["http.method"] == "OPTIONS"'
+            - 'attributes["http.method"] == "HEAD"'
+    autoInstrumentation:
+      enabled: true
+      beyla:
+        config:
+          data:
+            discovery:
+              # Exclude system namespaces from auto-instrumentation
+              # Focus on application namespaces only
+              exclude_services:
+                - k8s_namespace: kube-system
+                - k8s_namespace: kube-public
+                - k8s_namespace: kube-node-lease
+                - k8s_namespace: grafanacloud
+                          # Include the rest
+              services:
+                - k8s_namespace: .
+            # Routes configuration for outbound traffic capture
+            # Reference: https://grafana.com/docs/beyla/latest/configure/routes-decorator/
+            routes:
+              unmatched: heuristic  # Capture outbound routes not explicitly defined
+              # Mirrors the OTLP trace filters for consistency in what's dropped
+              ignored_patterns:
+                - /health*
+                - /live*
+                - /readiness*
+                - /startup*
+                - /heartbeat*
+                - /ready*
+                - /ping*
+                - /actuator*
+                - /metrics*
+        resources:
+          requests:
+            cpu: 100m
+            memory: 600Mi
+          limits:
+            memory: 4Gi
+    alloy-operator:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+        limits:
+          memory: 150Mi
+    alloy-metrics:
+      enabled: true
+      alloy:
+        clustering:
+          enabled: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 600Mi
+          limits:
+            memory: 4Gi
+      controller:
+        autoscaling:
+          enabled: true
+          minReplicas: 1
+          maxReplicas: 5
+          targetCPUUtilizationPercentage: 0
+          targetMemoryUtilizationPercentage: 70
+          vertical:
+            enabled: true
+    alloy-singleton:
+      enabled: true
+      alloy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 600Mi
+          limits:
+            memory: 4Gi
+    alloy-logs:
+      enabled: true
+      controller:
+        tolerations:
+          - key: "node-role.kubernetes.io/etcd"
+            effect: "NoExecute"
+            operator: "Exists"
+          - key: "node-role.kubernetes.io/control-plane"
+            effect: "NoSchedule"
+            operator: "Exists"
+      alloy:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 600Mi
+          limits:
+            memory: 4Gi
+    alloy-receiver:
+      enabled: true
+      alloy:
+        extraPorts:
+          - name: http-otlp
+            port: 4318
+            targetPort: 4318
+            protocol: TCP
+          - name: grpc-otlp
+            port: 4317
+            targetPort: 4317
+            protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 600Mi
+          limits:
+            memory: 4Gi
+    integrations:
+      alloy:
+        instances:
+          - name: alloy
+            labelSelectors:
+              app.kubernetes.io/name:
+                - alloy-metrics
+                - alloy-singleton
+                - alloy-logs
+                - alloy-receiver
