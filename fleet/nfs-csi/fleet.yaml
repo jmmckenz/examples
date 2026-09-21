@@ -1,0 +1,11 @@
+defaultNamespace: kube-system
+helm:
+  chart: csi-driver-nfs
+  repo: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+  version: "4.13.4"
+  releaseName: csi-driver-nfs
+  values:
+    controller:
+      replicas: 2
+    feature:
+      enableFSGroupPolicy: true
