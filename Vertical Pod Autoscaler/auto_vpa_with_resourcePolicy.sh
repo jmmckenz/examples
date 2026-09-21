@@ -61,7 +61,7 @@ spec:
     updateMode: "Off"
   resourcePolicy:
     containerPolicies:
-      - containerName: "*""
+      - containerName: "*"
         controlledResources: ["cpu", "memory"]
         # Options: RequestsAndLimits (Default) OR RequestsOnly
         controlledValues: RequestsOnly 
