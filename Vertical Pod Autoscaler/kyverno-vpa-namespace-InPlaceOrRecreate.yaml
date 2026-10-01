@@ -1,7 +1,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: vpa-enable-inplaceorrecreate-in-namespace
+  name: vpa-namespace-enable-inplaceorrecreate
   annotations:
     policies.kyverno.io/title: Change VPA UpdateMode for a Specific Namespace
     policies.kyverno.io/description: Overrides the updateMode for all VPAs in a specified namespace.
