@@ -1,0 +1,151 @@
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Autoscaling
+    policies.kyverno.io/description: >-
+      Generates a recommendation-bounded VerticalPodAutoscaler for each
+      Deployment, StatefulSet, and DaemonSet processed by Kyverno. Deployments
+      and StatefulSets manage CPU and memory; DaemonSets manage CPU only so one
+      busy node cannot inflate memory requests across every node.
+    policies.kyverno.io/minversion: 1.18.0
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/subject: Deployment, StatefulSet, DaemonSet
+    policies.kyverno.io/title: Auto VPA
+  name: auto-vpa
+spec:
+  admission: true
+  background: true
+  emitWarning: false
+  rules:
+    - generate:
+        apiVersion: autoscaling.k8s.io/v1
+        data:
+          spec:
+            resourcePolicy:
+              containerPolicies:
+                - containerName: '*'
+                  controlledResources:
+                    - cpu
+                    - memory
+                  controlledValues: RequestsAndLimits
+#                  maxAllowed:
+#                    cpu: '3'
+#                    memory: 6Gi
+                  minAllowed:
+                    cpu: 50m
+                    memory: 64Mi
+            targetRef:
+              apiVersion: apps/v1
+              kind: Deployment
+              name: '{{ request.object.metadata.name }}'
+            updatePolicy:
+              updateMode: Off
+        generateExisting: true
+        kind: VerticalPodAutoscaler
+        name: vpa-{{ request.object.metadata.name }}-deployment
+        namespace: '{{ request.object.metadata.namespace }}'
+        synchronize: true
+      match:
+        any:
+          - resources:
+              kinds:
+                - apps/v1/Deployment
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - kube-system
+            - kube-public
+            - cattle-*
+            - kube-autoscaler
+      name: generate-vpa-for-deployment
+      skipBackgroundRequests: true
+    - generate:
+        apiVersion: autoscaling.k8s.io/v1
+        data:
+          spec:
+            resourcePolicy:
+              containerPolicies:
+                - containerName: '*'
+                  controlledResources:
+                    - cpu
+                    - memory
+                  controlledValues: RequestsAndLimits
+#                  maxAllowed:
+#                    cpu: '3'
+#                    memory: 6Gi
+                  minAllowed:
+                    cpu: 50m
+                    memory: 64Mi
+            targetRef:
+              apiVersion: apps/v1
+              kind: StatefulSet
+              name: '{{ request.object.metadata.name }}'
+            updatePolicy:
+              updateMode: Off
+        generateExisting: true
+        kind: VerticalPodAutoscaler
+        name: vpa-{{ request.object.metadata.name }}-statefulset
+        namespace: '{{ request.object.metadata.namespace }}'
+        synchronize: true
+      match:
+        any:
+          - resources:
+              kinds:
+                - apps/v1/StatefulSet
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - kube-system
+            - kube-public
+            - cattle-*
+            - kube-autoscaler
+      name: generate-vpa-for-statefulset
+      skipBackgroundRequests: true
+    - generate:
+        apiVersion: autoscaling.k8s.io/v1
+        data:
+          spec:
+            resourcePolicy:
+              containerPolicies:
+                - containerName: '*'
+                  controlledResources:
+                    - cpu
+                    - memory
+                  controlledValues: RequestsAndLimits
+ #                 maxAllowed:
+ #                   cpu: '1'
+ #                   memory: 6Gi
+                  minAllowed:
+                    cpu: 50m
+                    memory: 64Mi
+            targetRef:
+              apiVersion: apps/v1
+              kind: DaemonSet
+              name: '{{ request.object.metadata.name }}'
+            updatePolicy:
+              updateMode: Off
+        generateExisting: true
+        kind: VerticalPodAutoscaler
+        name: vpa-{{ request.object.metadata.name }}-daemonset
+        namespace: '{{ request.object.metadata.namespace }}'
+        synchronize: true
+      match:
+        any:
+          - resources:
+              kinds:
+                - apps/v1/DaemonSet
+      exclude:
+        any:
+        - resources:
+            namespaces:
+            - kube-system
+            - kube-public
+            - cattle-*
+            - kube-autoscaler
+      name: generate-vpa-for-daemonset
+      skipBackgroundRequests: true
+  validationFailureAction: Audit
+

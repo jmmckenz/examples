@@ -1,0 +1,23 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: vpa-enable-inplaceorrecreate-in-namespace
+  annotations:
+    policies.kyverno.io/title: Change VPA UpdateMode for a Specific Namespace
+    policies.kyverno.io/description: Overrides the updateMode for all VPAs in a specified namespace.
+spec:
+  rules:
+    - name: set-vpa-updatemode
+      match:
+        any:
+          - resources:
+              kinds:
+                - autoscaling.k8s.io/v1/VerticalPodAutoscaler
+              namespaces:
+                - "test2"  # <-- Replace with your specific namespace
+      mutate:
+        patchStrategicMerge:
+          spec:
+            updatePolicy:
+              updateMode: "InPlaceOrRecreate"        # <-- Force all VPAs in this namespace to "Auto", "Initial", "Recreate", or "Off"
+
