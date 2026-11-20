@@ -1,3 +1,4 @@
+# CURRENTLY DEPRECATED....Updates to follow to add SCC Reg (2.16.1 and beyond) and installation behind proxy
 <font size="16"> Table of Contents</font> 
 
 - [1. Install RKE2 and Rancher](#1-install-rke2-and-rancher)
